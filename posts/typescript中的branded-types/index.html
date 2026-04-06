@@ -1,0 +1,260 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>Typescript中的Branded Types - Adiós</title><link href="/favicon.ico" rel="icon" /><link title="RSS" href="/feed.xml" type="application/atom+xml" rel="alternate" /><script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t}else if(window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.dataset.theme='dark'}}catch(e){}})();</script><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="/assets/style.170b9922.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/">首页</a><a href="/til/">TIL</a><a href="/archives/">归档</a><a href="/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><div class="q6DmLG_postLayout"><main class="q6DmLG_article"><div class="q6DmLG_postHeader"><h1 class="q6DmLG_postTitle">Typescript中的Branded Types</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/2/25 00:23:44</time></span><span class="q6DmLG_metaItem">21 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/tags/#Typescript/">Typescript</a></div></div></div><div class="q6DmLG_content"><h2 id="问题背景" tabindex="-1">问题背景</h2>
+<p>以一个简单的 用户-博文 系统为例：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">interface</span><span class="__shiki_1g8orr"> User</span><span class="__shiki_1pf2xz"> {}</span></span>
+<span class="line"><span class="__shiki_13ief6">interface</span><span class="__shiki_1g8orr"> Post</span><span class="__shiki_1pf2xz"> {}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">declare</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> getUser</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">id</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> User</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">declare</span><span class="__shiki_13ief6">  function</span><span class="__shiki_2fxx5c"> getPost</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">id</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Post</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "user_123"</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> postId</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "post_123"</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 虽然TypeScript编译通过，但从业务上说，逻辑是错误的!</span></span>
+<span class="line"><span class="__shiki_2fxx5c">getUser</span><span class="__shiki_1pf2xz">(postId); </span><span class="__shiki_25oonp">// Compiles, Runtime bug: fetches wrong data</span></span>
+<span class="line"><span class="__shiki_2fxx5c">getPost</span><span class="__shiki_1pf2xz">(userId); </span><span class="__shiki_25oonp">// Compiles, Runtime bug: fetches wrong data</span></span></code></pre>
+<p>可以看到，<code>UserId</code>和<code>PostId</code>本质上都是string类型，对于这个基本类型，Typescript 无法知道这个基本类型在不同结构类型中是需要作区分的，导致我们在后续代码中可能错误地传递参数，且 Typescript 仍可编译通过无报错，进而引发运行时的错误。</p>
+<h2 id="引入branded-types" tabindex="-1">引入Branded Types</h2>
+<p><strong>Branded types</strong>，别名<em>tagged types</em>或<em>opaque types</em>，是一种在结构类型语言中创建名义上不同的类型的技术。</p>
+<h3 id="核心思想" tabindex="-1">核心思想</h3>
+<p>其基本原理很简单：给类型添加一个独特的标记，使其在名义上与众不同，即使底层结构相同。该技术利用 Typescript 的交叉类型来添加一个幻影属性-- 一个只在编译时存在，运行时永远不会存在的属性。</p>
+<h3 id="基本使用" tabindex="-1">基本使用</h3>
+<p>还是上面那个例子，我们稍作改造：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">interface</span><span class="__shiki_1g8orr"> User</span><span class="__shiki_1pf2xz"> {}</span></span>
+<span class="line"><span class="__shiki_13ief6">interface</span><span class="__shiki_1g8orr"> Post</span><span class="__shiki_1pf2xz"> {}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> string</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_13ief6">readonly</span><span class="__shiki_1g8orr"> __brand</span><span class="__shiki_13ief6">:</span><span class="__shiki_50d5g0"> "UserId"</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> string</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_13ief6">readonly</span><span class="__shiki_1g8orr"> __brand</span><span class="__shiki_13ief6">:</span><span class="__shiki_50d5g0"> "PostId"</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">declare</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> getUser</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">id</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> User</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">declare</span><span class="__shiki_13ief6">  function</span><span class="__shiki_2fxx5c"> getPost</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">id</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Post</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "user_123"</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> postId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "post_123"</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 编译提示错误</span></span>
+<span class="line"><span class="__shiki_2fxx5c">getUser</span><span class="__shiki_1pf2xz">(postId);</span></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Argument of type 'PostId' is not assignable to parameter of type 'UserId'.</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">Type 'PostId' is not assignable to type '{ readonly __brand: "UserId"; }'.</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">Types of property '__brand' are incompatible.</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">Type '"PostId"' is not assignable to type '"UserId"'.(2345)</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_2fxx5c">getPost</span><span class="__shiki_1pf2xz">(userId);</span></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Argument of type 'UserId' is not assignable to parameter of type 'PostId'.</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">Type 'UserId' is not assignable to type '{ readonly __brand: "PostId"; }'.</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">Types of property '__brand' are incompatible.</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">Type '"UserId"' is not assignable to type '"PostId"'.(2345)</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">*/</span></span></code></pre>
+<p>现在，Typescript 可以把<code>UserId</code>和<code>PostId</code>视作不同的类型，即使他们在底层结构上都是string类型。<code>{ readonly __brand: &quot;UserId&quot; }</code>和<code>{ readonly __brand: &quot;PostId&quot; }</code>使得这两个类型不再相互兼容。</p>
+<div class="markdown-alert markdown-alert-warning">
+<p class="markdown-alert-title">Warning</p>
+<p>注意：在运行时，<code>UserId</code>和<code>PostId</code>仍然只是普通的字符串，<code>__brand</code>属性在编译期间便被消除。这意味着：</p>
+<ul>
+<li>零运行时开销</li>
+<li>零额外性能开销</li>
+<li>对内存没有影响</li>
+<li>完全编译期安全</li>
+</ul>
+</div>
+<h3 id="进阶使用" tabindex="-1">进阶使用</h3>
+<p>每次写<code>string &amp; { readonly __brand: &quot;UserId&quot; }</code>有些过于硬核，我们可以创建一些辅助类型用于生成Branded types。</p>
+<h4 id="使用泛型" tabindex="-1">使用泛型</h4>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1g8orr">T</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">BrandName</span><span class="__shiki_13ief6"> extends</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">> </span><span class="__shiki_13ief6">=</span><span class="__shiki_1g8orr"> T</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_13ief6">readonly</span><span class="__shiki_1g8orr"> __brand</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> BrandName</span><span class="__shiki_1pf2xz"> };</span></span></code></pre>
+<p>这个<code>Brand</code>类型接受两个参数：</p>
+<ul>
+<li><code>T</code>: 底层类型（如string、number等）</li>
+<li><code>BrandName</code>: 一个唯一字符串字面量用于定义和区分brand</li>
+</ul>
+<p>现在，我们可以这样子创建Branded types:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"UserId"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"PostId"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Email</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"Email"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Meters</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">number</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"Meters"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Feet</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">number</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"Feet"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> USD</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">number</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"USD"</span><span class="__shiki_1pf2xz">>;</span></span></code></pre>
+<p>简洁了许多，但我们可以再进一步优化。</p>
+<h4 id="唯一symbol" tabindex="-1">唯一symbol</h4>
+<p>为了更高的安全性，我们可以使用 Typescript 的<code>unique symbol</code>特性取代字符串字面量。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">declare</span><span class="__shiki_13ief6"> const</span><span class="__shiki_1r536h"> brandSymbol</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> unique</span><span class="__shiki_1r536h"> symbol</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1g8orr">T</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">BrandName</span><span class="__shiki_1pf2xz">> </span><span class="__shiki_13ief6">=</span><span class="__shiki_1g8orr"> T</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { [brandSymbol]</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> BrandName</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 用法相同</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"UserId"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> PostId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"PostId"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Email</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"Email"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"></span></code></pre>
+<p>使用<code>unique symbol</code>有两个优势：</p>
+<ul>
+<li>防止意外的类型匹配。使用像 <code>__brand</code> 这样的基于字符串的品牌标识时，存在一个风险：来自第三方库的实际对象可能确实具有名为 <code>__brand</code> 的属性。使用唯一符号可以完全消除这种风险——符号保证是唯一的，并且该标识仅存在于类型级别。</li>
+<li>更友好的IDE体验。当你使用像 <code>__brand</code> 这样的字符串属性时，它会在你输入 <code>someObj</code> 时出现在 IDE 的自动补全功能中，这会对编程造成干扰。而<code>symbol</code>不会出现在自动补全功能中，从而保持开发体验的简洁。</li>
+</ul>
+<h4 id="简短的构造函数" tabindex="-1">简短的构造函数</h4>
+<p>由于Branded types的属性在运行时并不存在，我们自然无法直接使用下面的方式创建Branded types:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> string</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_13ief6">readonly</span><span class="__shiki_1g8orr"> __brand</span><span class="__shiki_13ief6">:</span><span class="__shiki_50d5g0"> "UserId"</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId_1</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> { __brand: </span><span class="__shiki_50d5g0">"UserId"</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Type '{ __brand: "UserId"; }' is not assignable to type 'UserId'.</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">Type '{ __brand: "UserId"; }' is not assignable to type 'string'.(2322)</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId_2</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "user_123"</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Type 'string' is not assignable to type 'UserId'.</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">Type 'string' is not assignable to type '{ readonly __brand: "UserId"; }'.(2322)</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span></code></pre>
+<p>因此，我们可以使用一个简单的构造函数来创建Branded types并减少<code>as</code>的滥用：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"UserId"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 不推荐: 类型断言随处散落</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId1</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "1234"</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId2</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "5678"</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId3</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "9012"</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 推荐做法: 单一简短且具有语义化的构造函数</span></span>
+<span class="line"><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> createUserId</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">id</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> id </span><span class="__shiki_13ief6">as</span><span class="__shiki_1g8orr"> UserId</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId1</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> createUserId</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">"1234"</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId2</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> createUserId</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">"5678"</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> userId3</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> createUserId</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">"9012"</span><span class="__shiki_1pf2xz">);</span></span></code></pre>
+<h3 id="值类型转换" tabindex="-1">值类型转换</h3>
+<p>上面提到的代码，均是传递已知为Branded types的值。但我们如何告诉 Typescript 某个新值是Branded types？
+这通常通过两种方式完成：类型断言或类型收缩。</p>
+<h4 id="as断言" tabindex="-1">as断言</h4>
+<p>利用<code>as</code>关键字确保 Typescript 知道某个新值是对应的类型：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> number</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1g8orr">__brand</span><span class="__shiki_13ief6">:</span><span class="__shiki_50d5g0"> "positive"</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> myPositive</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 编译通过: 通过断言告知Typescript 123是Positive类型</span></span>
+<span class="line"><span class="__shiki_1pf2xz">myPositive </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 123</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 编译失败：Typescript 无法知道 123 是不是预期的类型</span></span>
+<span class="line"><span class="__shiki_1pf2xz">myPositive </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 123</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Type 'number' is not assignable to type 'Positive'.</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">Type 'number' is not assignable to type '{ __brand: "positive"; }'.(2322)</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span></code></pre>
+<p>但<code>as</code>的缺点也很明显，断言会导致在开发者不准确的情况下绕过类型错误的提示。比如，即使<code>-1 as Positive</code>可以通过类型检查，但-1明显不是正数。</p>
+<h4 id="类型收缩-type-predicates" tabindex="-1">类型收缩（Type Predicates）</h4>
+<p>Type Predicates是通过函数的形式，将值类型收缩或断言为某个类型。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> number</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1g8orr">__brand</span><span class="__shiki_13ief6">:</span><span class="__shiki_50d5g0"> "positive"</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> isPositive</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">value</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> value</span><span class="__shiki_13ief6"> is</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> value </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> myPositive</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> value </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 123</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_2fxx5c">isPositive</span><span class="__shiki_1pf2xz">(value)) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 编译通过，isPositive函数调用后，Typescript 知道value变量的类型被推断为Positive类型</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">myPositive </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> value;</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_25oonp">// 编译失败，Typescript 无法知道 123 是否是预期的Positive类型</span></span>
+<span class="line"><span class="__shiki_1pf2xz">myPositive </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 123</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Type 'number' is not assignable to type 'Positive'.</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">Type 'number' is not assignable to type '{ __brand: "positive"; }'.(2322)</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span></code></pre>
+<p>当然，Type Predicates也并不比<code>as</code>来的类型安全。其准确性仍然取决于开发者。</p>
+<h4 id="类型断言函数" tabindex="-1">类型断言函数</h4>
+<p>Type Predicates的另一个缺点是它们需要在代码中写条件判断<code>if （isPositive） { ... }</code>。这些 <code>if</code> 占用更多空间，并增加了比断言<code>as</code>更多的运行逻辑。</p>
+<p>为了让代码更易读，我们可以提取一个称为“类型断言函数”的实用函数。类型断言函数接收一个值，如果该值与预期类型不符则抛出错误，否则返回该值。当与Type Predicates配合使用时，类型断言函数可以告知 TypeScript 一个值是Branded types的一个实例类型。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> number</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1g8orr">__brand</span><span class="__shiki_13ief6">:</span><span class="__shiki_50d5g0"> "positive"</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> assertPositive</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">value</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_13ief6"> asserts</span><span class="__shiki_1g8orr"> value</span><span class="__shiki_13ief6"> is</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (value </span><span class="__shiki_13ief6">&#x3C;</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">throw</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> Error</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">`${</span><span class="__shiki_1pf2xz">value</span><span class="__shiki_50d5g0">} is not positive.`</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> myPositive</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> value </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 123</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_2fxx5c">assertPositive</span><span class="__shiki_1pf2xz">(value);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 编译通过，Typescript 知道 value 是Positive类型</span></span>
+<span class="line"><span class="__shiki_1pf2xz">myPositive </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> value;</span></span></code></pre>
+<h2 id="第三方库" tabindex="-1">第三方库</h2>
+<p>这里罗列一些和Branded types概念相关的，或者提供创建Branded types辅助函数的第三方库。</p>
+<h3 id="zod" tabindex="-1">zod</h3>
+<p>点击<a href="https://zod.dev/api#branded-types">此处</a>查看完整用法:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> Cat</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> z.</span><span class="__shiki_2fxx5c">object</span><span class="__shiki_1pf2xz">({ name: z.</span><span class="__shiki_2fxx5c">string</span><span class="__shiki_1pf2xz">() }).</span><span class="__shiki_2fxx5c">brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_50d5g0">"Cat"</span><span class="__shiki_1pf2xz">>();</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> Dog</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> z.</span><span class="__shiki_2fxx5c">object</span><span class="__shiki_1pf2xz">({ name: z.</span><span class="__shiki_2fxx5c">string</span><span class="__shiki_1pf2xz">() }).</span><span class="__shiki_2fxx5c">brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_50d5g0">"Dog"</span><span class="__shiki_1pf2xz">>();</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Cat</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> z</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">infer</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_13ief6">typeof</span><span class="__shiki_1pf2xz"> Cat>; </span><span class="__shiki_25oonp">// { name: string } &#x26; z.$brand&#x3C;"Cat"></span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Dog</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> z</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">infer</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_13ief6">typeof</span><span class="__shiki_1pf2xz"> Dog>; </span><span class="__shiki_25oonp">// { name: string } &#x26; z.$brand&#x3C;"Dog"></span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> pluto</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Dog.</span><span class="__shiki_2fxx5c">parse</span><span class="__shiki_1pf2xz">({ name: </span><span class="__shiki_50d5g0">"pluto"</span><span class="__shiki_1pf2xz"> });</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> simba</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Cat</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> pluto; </span><span class="__shiki_25oonp">// ❌ not allowed</span></span></code></pre>
+<h3 id="io-ts" tabindex="-1">io-ts</h3>
+<p><a href="https://github.com/gcanti/io-ts">io-ts</a>提供了运行时类型检查的辅助函数：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">import</span><span class="__shiki_1r536h"> *</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1pf2xz"> t </span><span class="__shiki_13ief6">from</span><span class="__shiki_50d5g0"> "io-ts"</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// Define a branded codec</span></span>
+<span class="line"><span class="__shiki_13ief6">interface</span><span class="__shiki_1g8orr"> PositiveBrand</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">readonly</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> unique</span><span class="__shiki_1r536h"> symbol</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> Positive</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> t.</span><span class="__shiki_2fxx5c">brand</span><span class="__shiki_1pf2xz">(</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">t.number,</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">n</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> n</span><span class="__shiki_13ief6"> is</span><span class="__shiki_1g8orr"> t</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">Branded</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">number</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">PositiveBrand</span><span class="__shiki_1pf2xz">> </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> n </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_50d5g0">"Positive"</span></span>
+<span class="line"><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> t</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">TypeOf</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_13ief6">typeof</span><span class="__shiki_1pf2xz"> Positive>;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// Decode and validate</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Positive.</span><span class="__shiki_2fxx5c">decode</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">42</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_25oonp">// result is Either&#x3C;Errors, Positive></span></span></code></pre>
+<h3 id="ts-brand" tabindex="-1">ts-brand</h3>
+<p><a href="https://github.com/kourge/ts-brand">ts-brand</a>包提供了社区构建选项，可以共享仅针对Branded types的预写代码：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">import</span><span class="__shiki_1pf2xz"> { Brand } </span><span class="__shiki_13ief6">from</span><span class="__shiki_50d5g0"> "ts-brand"</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Guid</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">"guid"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> myKnownGuid</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> "abc123"</span><span class="__shiki_13ief6"> as</span><span class="__shiki_1g8orr"> Guid</span><span class="__shiki_1pf2xz">;</span></span></code></pre>
+<h3 id="effect-ts" tabindex="-1">effect-ts</h3>
+<p><a href="https://github.com/Effect-TS/effect">Effect</a>是一个流行的用于构建类型丰富的Typescript应用程序框架：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">import</span><span class="__shiki_1pf2xz"> { Brand } </span><span class="__shiki_13ief6">from</span><span class="__shiki_50d5g0"> "effect"</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">type</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> number</span><span class="__shiki_13ief6"> &#x26;</span><span class="__shiki_1g8orr"> Brand</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">Brand</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_50d5g0">"Positive"</span><span class="__shiki_1pf2xz">>;</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> asPositive</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Brand.</span><span class="__shiki_2fxx5c">nominal</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1g8orr">Positive</span><span class="__shiki_1pf2xz">>();</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> myPositive</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Positive</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="__shiki_25oonp">// Ok: the asPositive tells TypeScript we meant this. 👍</span></span>
+<span class="line"><span class="__shiki_1pf2xz">myPositive </span><span class="__shiki_13ief6">=</span><span class="__shiki_2fxx5c"> asPositive</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">123</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// Type error: TypeScript doesn't know whether this is intended. 👍</span></span>
+<span class="line"><span class="__shiki_1pf2xz">myPositive </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 123</span><span class="__shiki_1pf2xz">;</span></span></code></pre>
+<h2 id="参考链接" tabindex="-1">参考链接</h2>
+<p>更多内容可以参考以下几篇文章：</p>
+<ul>
+<li><a href="https://www.learningtypescript.com/articles/branded-types">branded-types</a></li>
+<li><a href="https://egghead.io/blog/using-branded-types-in-typescript">using-branded-types-in-typescript</a></li>
+<li><a href="https://nanamanu.com/posts/branded-types-typescript/">branded-types-typescript</a></li>
+</ul>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">Typescript中的Branded Types</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="/posts/typescript中的branded-types/" class="q6DmLG_infoCardLink">/posts/typescript中的branded-types/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/2/25 00:23:44</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></main><aside class="q6DmLG_tocAside"><nav aria-label="目录"><div class="q6DmLG_tocTitle">目录</div><ul class="q6DmLG_tocList"><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#问题背景">问题背景</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#引入branded-types">引入Branded Types</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#核心思想">核心思想</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#基本使用">基本使用</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#进阶使用">进阶使用</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="4"><a class="q6DmLG_tocLink" href="#使用泛型">使用泛型</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="4"><a class="q6DmLG_tocLink" href="#唯一symbol">唯一symbol</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="4"><a class="q6DmLG_tocLink" href="#简短的构造函数">简短的构造函数</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#值类型转换">值类型转换</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="4"><a class="q6DmLG_tocLink" href="#as断言">as断言</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="4"><a class="q6DmLG_tocLink" href="#类型收缩-type-predicates">类型收缩（Type Predicates）</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="4"><a class="q6DmLG_tocLink" href="#类型断言函数">类型断言函数</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#第三方库">第三方库</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#zod">zod</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#io-ts">io-ts</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#ts-brand">ts-brand</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#effect-ts">effect-ts</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#参考链接">参考链接</a></li></ul></nav></aside></div><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/feed.xml">RSS</a></div></div></footer></div><style>
+          .layout {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+          }
+          .layout > main {
+            flex: 1;
+          }
+        </style><script src="/assets/client.522785db.js"></script></body></html>

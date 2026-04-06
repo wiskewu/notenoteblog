@@ -1,0 +1,67 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>PowerShell设置Alias别名命令 - Adiós</title><link href="/favicon.ico" rel="icon" /><link title="RSS" href="/feed.xml" type="application/atom+xml" rel="alternate" /><script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t}else if(window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.dataset.theme='dark'}}catch(e){}})();</script><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="/assets/style.170b9922.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/">首页</a><a href="/til/">TIL</a><a href="/archives/">归档</a><a href="/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><div class="q6DmLG_postLayout"><main class="q6DmLG_article"><div class="q6DmLG_postHeader"><h1 class="q6DmLG_postTitle">PowerShell设置Alias别名命令</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/4/6 01:40:17</time></span><span class="q6DmLG_metaItem">5 分钟阅读</span></div></div><div class="q6DmLG_content"><p>在 PowerShell 中设置快捷别名（Alias）主要有临时生效和永久生效两种方式，核心命令是 <code>Set-Alias</code>（或 <code>New-Alias</code>），永久生效需写入 PowerShell 配置文件（Profile）。</p>
+<p>此文只记录永久设置的方式。</p>
+<h2 id="写入永久别名规则" tabindex="-1">写入永久别名规则</h2>
+<p>以将<code>$env:OPENCODE_CONFIG=&quot;E:/githubrefs/opencodecfg/opencode.jsonc&quot;; $env:OPENCODE_CONFIG_DIR=&quot;E:/githubrefs/opencodecfg/prod&quot;; opencode</code> 设置为别名 <code>myopencode</code> 为例。</p>
+<h3 id="找到或创建配置文件" tabindex="-1">找到或创建配置文件</h3>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-powershell"><span class="line"><span class="__shiki_25oonp"># 查看当前用户配置文件路径</span></span>
+<span class="line"><span class="__shiki_1r536h">$PROFILE</span></span>
+<span class="line"><span class="__shiki_25oonp"># 输出示例：C:\Users\DELL\Documents\PowerShell\Microsoft.PowerShell_profile.ps1</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp"># 若文件不存在，创建它</span></span>
+<span class="line"><span class="__shiki_1r536h">New-Item</span><span class="__shiki_13ief6"> -</span><span class="__shiki_1pf2xz">Type File </span><span class="__shiki_13ief6">-</span><span class="__shiki_1pf2xz">Path </span><span class="__shiki_1r536h">$PROFILE</span><span class="__shiki_13ief6"> -</span><span class="__shiki_1pf2xz">Force</span></span></code></pre>
+<h3 id="编辑配置文件" tabindex="-1">编辑配置文件</h3>
+<p>用记事本打开并添加别名：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-powershell"><span class="line"><span class="__shiki_25oonp"># 打开配置文件</span></span>
+<span class="line"><span class="__shiki_1pf2xz">notepad </span><span class="__shiki_1r536h">$PROFILE</span></span></code></pre>
+<h3 id="写入规则" tabindex="-1">写入规则</h3>
+<p>在配置文件写入以下规则：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-powershell"><span class="line"><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> myopencode</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">$</span><span class="__shiki_1r536h">env:</span><span class="__shiki_1pf2xz">OPENCODE_CONFIG </span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0"> "E:/githubrefs/opencodecfg/opencode.jsonc"</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">$</span><span class="__shiki_1r536h">env:</span><span class="__shiki_1pf2xz">OPENCODE_CONFIG_DIR </span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0"> "E:/githubrefs/opencodecfg/prod"</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">opencode</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p>保存并关闭。</p>
+<h3 id="生效配置" tabindex="-1">生效配置</h3>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-powershell"><span class="line"><span class="__shiki_25oonp"># 立即加载配置（无需重启 PowerShell）</span></span>
+<span class="line"><span class="__shiki_13ief6">.</span><span class="__shiki_1r536h"> $PROFILE</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp"># 或重启 PowerShell 自动生效</span></span></code></pre>
+<p>在PowerShell 中输入 <code>myopencode</code> 即可启动带有参数的 opencode。</p>
+<h2 id="引申了解" tabindex="-1">引申了解</h2>
+<h3 id="临时别名" tabindex="-1">临时别名</h3>
+<p>临时别名仅在当前打开的 PowerShell 窗口生效，关闭后消失。
+基础命令：<code>Set-Alias</code> / <code>sal</code></p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-powershell"><span class="line"><span class="__shiki_25oonp"># 语法</span></span>
+<span class="line"><span class="__shiki_1r536h">Set-Alias</span><span class="__shiki_13ief6"> -</span><span class="__shiki_1pf2xz">Name </span><span class="__shiki_13ief6">&#x3C;</span><span class="__shiki_1pf2xz">别名</span><span class="__shiki_13ief6">></span><span class="__shiki_13ief6"> -</span><span class="__shiki_1pf2xz">Value </span><span class="__shiki_13ief6">&#x3C;</span><span class="__shiki_1pf2xz">原命令</span><span class="__shiki_13ief6">/</span><span class="__shiki_1pf2xz">程序</span><span class="__shiki_13ief6">></span></span>
+<span class="line"><span class="__shiki_25oonp"># 简写（推荐）</span></span>
+<span class="line"><span class="__shiki_1pf2xz">sal </span><span class="__shiki_13ief6">&#x3C;</span><span class="__shiki_1pf2xz">别名</span><span class="__shiki_13ief6">></span><span class="__shiki_13ief6"> &#x3C;</span><span class="__shiki_1pf2xz">原命令</span><span class="__shiki_13ief6">></span></span></code></pre>
+<p>常用示例：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-powershell"><span class="line"><span class="__shiki_25oonp"># 1. 系统命令别名（如 ls → Get-ChildItem）</span></span>
+<span class="line"><span class="__shiki_1pf2xz">sal ls </span><span class="__shiki_1r536h">Get-ChildItem</span></span>
+<span class="line"><span class="__shiki_1pf2xz">sal ll </span><span class="__shiki_50d5g0">"Get-ChildItem -Force"</span><span class="__shiki_25oonp">  # 带参数需用引号</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp"># 2. 外部程序别名（如 np → 记事本）</span></span>
+<span class="line"><span class="__shiki_1pf2xz">sal np notepad</span></span>
+<span class="line"><span class="__shiki_1pf2xz">sal code </span><span class="__shiki_50d5g0">"C:\Program Files\Microsoft VS Code\Code.exe"</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp"># 3. 查看所有别名</span></span>
+<span class="line"><span class="__shiki_1r536h">Get-Alias</span></span>
+<span class="line"><span class="__shiki_25oonp"># 查看指定别名</span></span>
+<span class="line"><span class="__shiki_1r536h">Get-Alias</span><span class="__shiki_1pf2xz"> ls</span></span></code></pre>
+<p>导出/导入别名:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-powershell"><span class="line"><span class="__shiki_25oonp"># 导出所有别名到文件</span></span>
+<span class="line"><span class="__shiki_1r536h">Export-Alias</span><span class="__shiki_13ief6"> -</span><span class="__shiki_1pf2xz">Path </span><span class="__shiki_50d5g0">"D:\alias_backup.txt"</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp"># 导入别名（覆盖现有）</span></span>
+<span class="line"><span class="__shiki_1r536h">Import-Alias</span><span class="__shiki_13ief6"> -</span><span class="__shiki_1pf2xz">Path </span><span class="__shiki_50d5g0">"D:\alias_backup.txt"</span><span class="__shiki_13ief6"> -</span><span class="__shiki_1pf2xz">Force</span></span></code></pre>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">PowerShell设置Alias别名命令</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="/posts/powershell设置alias别名命令/" class="q6DmLG_infoCardLink">/posts/powershell设置alias别名命令/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/4/6 01:40:17</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></main><aside class="q6DmLG_tocAside"><nav aria-label="目录"><div class="q6DmLG_tocTitle">目录</div><ul class="q6DmLG_tocList"><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#写入永久别名规则">写入永久别名规则</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#找到或创建配置文件">找到或创建配置文件</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#编辑配置文件">编辑配置文件</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#写入规则">写入规则</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#生效配置">生效配置</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#引申了解">引申了解</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#临时别名">临时别名</a></li></ul></nav></aside></div><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/feed.xml">RSS</a></div></div></footer></div><style>
+          .layout {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+          }
+          .layout > main {
+            flex: 1;
+          }
+        </style><script src="/assets/client.522785db.js"></script></body></html>

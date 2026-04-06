@@ -1,0 +1,48 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>配置Git Bash作为Windows Terminal选项 - Adiós</title><link href="/favicon.ico" rel="icon" /><link title="RSS" href="/feed.xml" type="application/atom+xml" rel="alternate" /><script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t}else if(window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.dataset.theme='dark'}}catch(e){}})();</script><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="/assets/style.170b9922.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/">首页</a><a href="/til/">TIL</a><a href="/archives/">归档</a><a href="/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><div class="q6DmLG_postLayout"><main class="q6DmLG_article"><div class="q6DmLG_postHeader"><h1 class="q6DmLG_postTitle">配置Git Bash作为Windows Terminal选项</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/1/8 13:14:54</time></span><span class="q6DmLG_metaItem">4 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/tags/#Windows/">Windows</a></div></div></div><div class="q6DmLG_content"><p>Windows Terminal 默认识别到的终端可能不包含Git Bash，将Git Bash集成到终端中，能够极大方便终端管理和切换。</p>
+<figure><img src="/assets/images/gitbash-on-windows-terminal--00.png" alt="默认不带Bash" tabindex="0" loading="lazy"><figcaption>默认不带Bash</figcaption></figure>
+<h2 id="准备工作" tabindex="-1">准备工作</h2>
+<p>首先确保电脑已经安装了<code>Git</code>软件。使用支持<code>bash</code>的终端查看：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-bash"><span class="line"><span class="__shiki_1g8orr">where</span><span class="__shiki_50d5g0"> bash</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">#输出</span></span>
+<span class="line"><span class="__shiki_25oonp"># C:\Windows\System32\bash.exe</span></span>
+<span class="line"><span class="__shiki_25oonp"># C:\Users\DELL\AppData\Local\Microsoft\WindowsApps\bash.exe</span></span>
+<span class="line"><span class="__shiki_25oonp"># D:\Programs\Git\usr\bin\bash.exe</span></span></code></pre>
+<p>可以知道，<code>D:\Programs\Git\usr\bin\bash.exe</code>是Git Bash所在的目录。</p>
+<h2 id="配置" tabindex="-1">配置</h2>
+<p>按照以下步骤操作：</p>
+<ol>
+<li>打开Windows Terminal软件；</li>
+<li>在标签页右侧下拉选项中，打开&quot;设置&quot;，或使用<code>ctrl+</code>,快捷键打开设置；</li>
+<li>在左侧配置文件中，点击&quot;添加新配置文件&quot;-&quot;新建空配置文件&quot;；</li>
+<li>名称填写&quot;GitBash&quot;；</li>
+<li>命令行填写上述输出的<code>&quot;D:\Programs\Git\usr\bin\bash.exe --login&quot;</code>；</li>
+<li>点击右下角的&quot;保存&quot;即可。</li>
+</ol>
+<p>完整配置如下：</p>
+<figure><img src="/assets/images/gitbash-on-windows-terminal--01.png" alt="配置示例" tabindex="0" loading="lazy"><figcaption>配置示例</figcaption></figure>
+<p>或使用<code>json</code>格式配置：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-json"><span class="line"><span class="__shiki_1pf2xz">{</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"commandline"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_50d5g0">"D:</span><span class="__shiki_13ief6">\\</span><span class="__shiki_50d5g0">Programs</span><span class="__shiki_13ief6">\\</span><span class="__shiki_50d5g0">Git</span><span class="__shiki_13ief6">\\</span><span class="__shiki_50d5g0">usr</span><span class="__shiki_13ief6">\\</span><span class="__shiki_50d5g0">bin</span><span class="__shiki_13ief6">\\</span><span class="__shiki_50d5g0">bash.exe --login"</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"guid"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_50d5g0">"{f1d2a988-6f53-41e2-b1f9-44c6d75135cd}"</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"hidden"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_1r536h">false</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"name"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_50d5g0">"GitBash"</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<p>命令行如果只配置&quot;D:\Programs\Git\usr\bin\bash.exe&quot;可能会导致bash shell能启动，但缺少必要的<code>PATH</code>环境变量，导致无法找到<code>ls</code>、<code>ll</code>、<code>dir</code>等命令。此时便可以添加<code>--login</code>参数以使用完整的bash功能。</p>
+</div>
+<h2 id="使用" tabindex="-1">使用</h2>
+<p>此时在终端的标签页下拉选项中就可以看到刚才新的GitBash选项，启动之后可以执行bash命令，如<code>ll</code>。</p>
+<figure><img src="/assets/images/gitbash-on-windows-terminal--02.png" alt="效果图" tabindex="0" loading="lazy"><figcaption>效果图</figcaption></figure>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">配置Git Bash作为Windows Terminal选项</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="/posts/配置git-bash作为windows-terminal选项/" class="q6DmLG_infoCardLink">/posts/配置git-bash作为windows-terminal选项/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/1/8 13:14:54</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></main><aside class="q6DmLG_tocAside"><nav aria-label="目录"><div class="q6DmLG_tocTitle">目录</div><ul class="q6DmLG_tocList"><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#准备工作">准备工作</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#配置">配置</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#使用">使用</a></li></ul></nav></aside></div><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/feed.xml">RSS</a></div></div></footer></div><style>
+          .layout {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+          }
+          .layout > main {
+            flex: 1;
+          }
+        </style><script src="/assets/client.522785db.js"></script></body></html>

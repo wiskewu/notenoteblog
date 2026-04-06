@@ -1,0 +1,259 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>基于Namespace的代码结构 - Adiós</title><link href="/favicon.ico" rel="icon" /><link title="RSS" href="/feed.xml" type="application/atom+xml" rel="alternate" /><script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t}else if(window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.dataset.theme='dark'}}catch(e){}})();</script><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="/assets/style.170b9922.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/">首页</a><a href="/til/">TIL</a><a href="/archives/">归档</a><a href="/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><div class="q6DmLG_postLayout"><main class="q6DmLG_article"><div class="q6DmLG_postHeader"><h1 class="q6DmLG_postTitle">基于Namespace的代码结构</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/1/21 00:14:02</time></span><span class="q6DmLG_metaItem">17 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/tags/#Typescript/">Typescript</a></div></div></div><div class="q6DmLG_content"><p>在发现并排查 <a href="https://github.com/anomalyco/opencode/issues/7896">Issue-7896</a> 时，拉取项目<a href="https://github.com/anomalyco/opencode">opencode</a>源代码进行调试，发现opencode源码中大量用到<code>namespace</code>关键字进行代码结构的组织管理。</p>
+<p>如<a href="https://github.com/anomalyco/opencode/blob/616329ae97c975f21687f6c8c9c6d4d8018e6fd9/packages/opencode/src/env/index.ts">packages/opencode/src/env/index.ts</a>中，文件的代码如下：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-typescript"><span class="line"><span class="__shiki_13ief6">import</span><span class="__shiki_1pf2xz"> { Instance } </span><span class="__shiki_13ief6">from</span><span class="__shiki_50d5g0"> "../project/instance"</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Env</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> state</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Instance.</span><span class="__shiki_2fxx5c">state</span><span class="__shiki_1pf2xz">(() </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> process.env </span><span class="__shiki_13ief6">as</span><span class="__shiki_1g8orr"> Record</span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_1r536h">string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">string</span><span class="__shiki_13ief6"> |</span><span class="__shiki_1r536h"> undefined</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">})</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> get</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">key</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> env</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> state</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> env[key]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> all</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_2fxx5c"> state</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> set</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">key</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">value</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> env</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> state</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">env[key] </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> value</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> remove</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">key</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> env</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> state</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">delete</span><span class="__shiki_1pf2xz"> env[key]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p>在这个代码中，<code>Env</code>和导入的<code>Instance</code>属于两个不同的<code>namespace</code>，是不同的模块和命名空间。
+在单个文件中使用一个<code>namespace</code>命名空间去组织代码，实现清晰的代码结构和模块化。</p>
+<p>在其<a href="https://github.com/anomalyco/opencode/blob/616329ae97c975f21687f6c8c9c6d4d8018e6fd9/packages/opencode/AGENTS.md">AGENT.md</a>文件中，也显式指出代码应该使用<code>namespace</code>进行组织：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-md"><span class="line"><span class="__shiki_10352w">## Code Style</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1ktxls"> **Runtime**</span><span class="__shiki_1pf2xz">: Bun with TypeScript ESM modules</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1ktxls"> **Imports**</span><span class="__shiki_1pf2xz">: Use relative imports for local modules, named imports preferred</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1ktxls"> **Types**</span><span class="__shiki_1pf2xz">: Zod schemas for validation, TypeScript interfaces for structure</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1ktxls"> **Naming**</span><span class="__shiki_1pf2xz">: camelCase for variables/functions, PascalCase for classes/namespaces</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1ktxls"> **Error handling**</span><span class="__shiki_1pf2xz">: Use Result patterns, avoid throwing exceptions in tools</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1ktxls"> **File structure**</span><span class="__shiki_1pf2xz">: Namespace-based organization (e.g., </span><span class="__shiki_1r536h">`Tool.define()`</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">`Session.create()`</span><span class="__shiki_1pf2xz">)</span></span></code></pre>
+<h2 id="与传统方式对比-此章节内容整理自ai" tabindex="-1">与传统方式对比（此章节内容整理自AI）</h2>
+<p>传统方式的代码组织结构和基于 Namespace 的区别为：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_25oonp">// 传统方式 vs Namespace 方式</span></span>
+<span class="line"><span class="__shiki_25oonp">// ❌ 传统：文件散乱</span></span>
+<span class="line"><span class="__shiki_25oonp">// utils/string-utils.ts</span></span>
+<span class="line"><span class="__shiki_25oonp">// utils/array-utils.ts</span></span>
+<span class="line"><span class="__shiki_25oonp">// utils/date-utils.ts</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// ✅ Namespace：逻辑聚合</span></span>
+<span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> Utils</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> StringUtils</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> ArrayUtils</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> DateUtils</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<h3 id="逻辑组织与命名空间管理" tabindex="-1">逻辑组织与命名空间管理</h3>
+<p>避免全局污染：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_25oonp">// bad</span></span>
+<span class="line"><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> formatDate</span><span class="__shiki_1pf2xz">() {}  </span><span class="__shiki_25oonp">// 可能与其他库冲突</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// good</span></span>
+<span class="line"><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Utils</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> formatDate</span><span class="__shiki_1pf2xz">() {}  </span><span class="__shiki_25oonp">// 完全隔离</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p>模块化内聚：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> ECommerce</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Payment</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> PaymentGateway</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> processPayment</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> refundPayment</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Cart</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> CartItem</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> addToCart</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> calculateTotal</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> User</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> UserProfile</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Auth</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> login</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> logout</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<h3 id="类型安全与ide提示" tabindex="-1">类型安全与IDE提示</h3>
+<p>具备完整的类型链：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> Geometry</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">; </span><span class="__shiki_1g8orr">y</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">; }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Shapes</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> Circle</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1g8orr">center</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz">; </span><span class="__shiki_1g8orr">radius</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">; }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> Rectangle</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1g8orr">topLeft</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz">; </span><span class="__shiki_1g8orr">width</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">; </span><span class="__shiki_1g8orr">height</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">; }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Operations</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> area</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">circle</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Circle</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> intersect</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">rect1</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Rectangle</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">rect2</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Rectangle</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> boolean</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Transform</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> rotate</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">point</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">angle</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> translate</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">point</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">dx</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">dy</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 🎯 使用时获得完整的智能提示：</span></span>
+<span class="line"><span class="__shiki_25oonp">// Geometry. ← 提示：Shapes, Transform</span></span>
+<span class="line"><span class="__shiki_25oonp">// Geometry.Shapes. ← 提示：Circle, Rectangle, Operations</span></span>
+<span class="line"><span class="__shiki_25oonp">// Geometry.Shapes.Operations. ← 提示：area, intersect</span></span></code></pre>
+<h3 id="渐进式代码拆分" tabindex="-1">渐进式代码拆分</h3>
+<p>从单体到模块的平滑过渡：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_25oonp">// 阶段1：单文件开发（快速原型）</span></span>
+<span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> App</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Models</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Services</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Components</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 阶段2：多文件拆分（使用引用标签）</span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"models/index.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"services/index.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"components/index.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 阶段3：完整模块化（ES6 Modules）</span></span>
+<span class="line"><span class="__shiki_25oonp">// 保持命名空间结构，但拆分为独立文件</span></span></code></pre>
+<h3 id="嵌套与作用域控制" tabindex="-1">嵌套与作用域控制</h3>
+<p>精细的访问控制：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> BankSystem</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 公共接口</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> Account</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1g8orr">id</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> string</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1g8orr">balance</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 内部实现细节（不导出）</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> Internal</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> connectionPool</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> any</span><span class="__shiki_1pf2xz">[] </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> [];  </span><span class="__shiki_25oonp">// 外部无法访问</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> validateTransaction</span><span class="__shiki_1pf2xz">() {}  </span><span class="__shiki_25oonp">// 私有函数</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> processInternally</span><span class="__shiki_1pf2xz">() {  </span><span class="__shiki_25oonp">// 通过公共接口暴露</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">validateTransaction</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 公共API</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> API</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> transfer</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">Internal.</span><span class="__shiki_2fxx5c">processInternally</span><span class="__shiki_1pf2xz">();  </span><span class="__shiki_25oonp">// 内部调用</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 外部只能访问：</span></span>
+<span class="line"><span class="__shiki_25oonp">// BankSystem.Account</span></span>
+<span class="line"><span class="__shiki_25oonp">// BankSystem.API.transfer()</span></span>
+<span class="line"><span class="__shiki_25oonp">// ❌ BankSystem.Internal 不可访问</span></span></code></pre>
+<h3 id="向后兼容性支持" tabindex="-1">向后兼容性支持</h3>
+<p>平滑迁移策略：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_25oonp">// legacy.ts - 旧代码</span></span>
+<span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> LegacyLib</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> oldMethod</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// modern.ts - 新代码，保持兼容</span></span>
+<span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> ModernLib</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> v1</span><span class="__shiki_1pf2xz"> {  </span><span class="__shiki_25oonp">// 兼容层</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> const</span><span class="__shiki_1r536h"> oldMethod</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> LegacyLib.oldMethod;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> v2</span><span class="__shiki_1pf2xz"> {  </span><span class="__shiki_25oonp">// 新API</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> newMethod</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 使用者可以逐步迁移：</span></span>
+<span class="line"><span class="__shiki_25oonp">// LegacyLib.oldMethod() → ModernLib.v1.oldMethod() → ModernLib.v2.newMethod()</span></span></code></pre>
+<h3 id="文件组织灵活性" tabindex="-1">文件组织灵活性</h3>
+<p>引用与合并示例：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_25oonp">// geometry/point.ts</span></span>
+<span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> Geometry</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">; </span><span class="__shiki_1g8orr">y</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">; }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> createPoint</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">y</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">)</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { x, y };</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// geometry/shapes/circle.ts</span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"../point.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> Geometry</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Shapes</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> Circle</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1g8orr">center</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz">;  </span><span class="__shiki_25oonp">// 来自上方的Point接口</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1g8orr">radius</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// geometry/shapes/rectangle.ts</span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"../point.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> Geometry</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> namespace</span><span class="__shiki_1g8orr"> Shapes</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> interface</span><span class="__shiki_1g8orr"> Rectangle</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1g8orr">topLeft</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Point</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1g8orr">width</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1g8orr">height</span><span class="__shiki_13ief6">:</span><span class="__shiki_1r536h"> number</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// main.ts - 使用时自动合并</span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"geometry/point.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"geometry/shapes/circle.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"><span class="__shiki_25oonp">/// &#x3C;</span><span class="__shiki_frrhl8">reference</span><span class="__shiki_1r536h"> path</span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0">"geometry/shapes/rectangle.ts"</span><span class="__shiki_25oonp"> /></span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> circle</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Geometry</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">Shapes</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">Circle</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> point</span><span class="__shiki_13ief6">:</span><span class="__shiki_1g8orr"> Geometry</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_1g8orr">Point</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Geometry.</span><span class="__shiki_2fxx5c">createPoint</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">0</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">0</span><span class="__shiki_1pf2xz">);</span></span></code></pre>
+<h3 id="编译与打包优化" tabindex="-1">编译与打包优化</h3>
+<p>Tree-shaking 友好结构：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">namespace</span><span class="__shiki_1g8orr"> Analytics</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 完整的功能集</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> trackPageView</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> trackEvent</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> function</span><span class="__shiki_2fxx5c"> trackError</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_25oonp">/* ... */</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 但编译时可以只包含使用的部分</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">export</span><span class="__shiki_13ief6"> const</span><span class="__shiki_1r536h"> minimal</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">trackPageView,  </span><span class="__shiki_25oonp">// 只导出需要的</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">};</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 使用端</span></span>
+<span class="line"><span class="__shiki_13ief6">import</span><span class="__shiki_1pf2xz"> { Analytics } </span><span class="__shiki_13ief6">from</span><span class="__shiki_50d5g0"> './analytics'</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 可以按需引入</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> essentialAnalytics</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Analytics.minimal;</span></span></code></pre>
+<h2 id="优势总结" tabindex="-1">优势总结</h2>
+<p>使用<code>namespace</code>具备如下优势：</p>
+<ul>
+<li>逻辑清晰：天然的分层组织结构</li>
+<li>避免污染：自包含的命名空间</li>
+<li>渐进迁移：从单体到模块的平滑路径</li>
+<li>工具友好：完善的IDE智能提示支持</li>
+<li>灵活拆分：支持多文件组织同一命名空间</li>
+<li>访问控制：通过<code>export</code>控制可见性</li>
+<li>编译优化：Typescript编辑器深度优化</li>
+<li>向后兼容：便于 API 版本管理和迁移</li>
+</ul>
+<p><code>namespace</code>提供了面向大型项目的、类型安全的、渐进可拆分的代码组织方案，特别适合需要良好架构设计和长期维护的 Typescript 项目。</p>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">基于Namespace的代码结构</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="/posts/基于namespace的代码结构/" class="q6DmLG_infoCardLink">/posts/基于namespace的代码结构/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/1/21 00:14:02</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></main><aside class="q6DmLG_tocAside"><nav aria-label="目录"><div class="q6DmLG_tocTitle">目录</div><ul class="q6DmLG_tocList"><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#与传统方式对比-此章节内容整理自ai">与传统方式对比（此章节内容整理自AI）</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#逻辑组织与命名空间管理">逻辑组织与命名空间管理</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#类型安全与ide提示">类型安全与IDE提示</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#渐进式代码拆分">渐进式代码拆分</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#嵌套与作用域控制">嵌套与作用域控制</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#向后兼容性支持">向后兼容性支持</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#文件组织灵活性">文件组织灵活性</a></li><li class="q6DmLG_tocItem q6DmLG_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="q6DmLG_tocLink" href="#编译与打包优化">编译与打包优化</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#优势总结">优势总结</a></li></ul></nav></aside></div><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/feed.xml">RSS</a></div></div></footer></div><style>
+          .layout {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+          }
+          .layout > main {
+            flex: 1;
+          }
+        </style><script src="/assets/client.522785db.js"></script></body></html>
