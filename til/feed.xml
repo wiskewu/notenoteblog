@@ -5,7 +5,25 @@
   <link href="til/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-04-10T10:14:31.621Z</updated>
+  <updated>2026-04-10T16:41:20.165Z</updated>
+  <entry>
+    <title>TIL 2026/4/11 00:01:26</title>
+    <link href="/til/build-your-own-react/" />
+    <id>/til/build-your-own-react/</id>
+    <updated>2026/4/11 00:01:26T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;build-your-own-react&quot; tabindex=&quot;-1&quot;&gt;Build your own React&lt;/h2&gt;
+&lt;p&gt;从零开始，逐步构建实现一个简易版的React，从代码中一步步了解React核心原理：&lt;a href=&quot;https://pomb.us/build-your-own-react/&quot;&gt;Build your own React&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>TIL 2026/4/10 23:20:13</title>
+    <link href="/til/a-complete-guide-to-useeffect/" />
+    <id>/til/a-complete-guide-to-useeffect/</id>
+    <updated>2026/4/10 23:20:13T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;a-complete-guide-to-useeffect&quot; tabindex=&quot;-1&quot;&gt;A Complete Guide to useEffect&lt;/h2&gt;
+&lt;p&gt;一份关于React &lt;code&gt;useEffect&lt;/code&gt; 的深入指南。&lt;a href=&quot;https://overreacted.io/a-complete-guide-to-useeffect/&quot;&gt;A Complete Guide to useEffect&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>TIL 2026/4/10 17:41:49</title>
     <link href="/til/杀死那个写代码的人/" />

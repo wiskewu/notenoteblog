@@ -1,0 +1,47 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>DOM0级事件与DOM2级事件 - Adiós</title><link href="https://wiskewu.github.io/notenoteblog/favicon.ico" rel="icon" /><link title="RSS" href="https://wiskewu.github.io/notenoteblog/feed.xml" type="application/atom+xml" rel="alternate" /><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="https://wiskewu.github.io/notenoteblog/assets/css/style.1eadc58a.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="_1BqNCq_layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/notenoteblog/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/notenoteblog/">首页</a><a href="/notenoteblog/til/">TIL</a><a href="/notenoteblog/archives/">归档</a><a href="/notenoteblog/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><div class="q6DmLG_postLayout"><main class="q6DmLG_article"><div class="q6DmLG_postHeader"><h1 class="q6DmLG_postTitle">DOM0级事件与DOM2级事件</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2022/10/23 21:11:53</time></span><span class="q6DmLG_metaItem">3 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/notenoteblog/tags/#DOM/">DOM</a></div></div></div><div class="yRPMta_markdownContent"><h2 id="dom0级事件" tabindex="-1">DOM0级事件</h2>
+<p>DOM0级事件，就是直接通过类似<code>onclick</code>等方式实现的事件，原生JS支持两种方式：</p>
+<ul>
+<li>
+<p>标签内书写0级事件：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-html"><span class="line"><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">button</span><span class="__shiki_1r536h"> onclick</span><span class="__shiki_1pf2xz">=</span><span class="__shiki_50d5g0">"</span><span class="__shiki_2fxx5c">alert</span><span class="__shiki_50d5g0">('click me');"</span><span class="__shiki_1pf2xz">>确定&#x3C;/</span><span class="__shiki_frrhl8">button</span><span class="__shiki_1pf2xz">></span></span></code></pre>
+</li>
+<li>
+<p>脚本中书写0级事件：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_1pf2xz">document.</span><span class="__shiki_2fxx5c">getElementById</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'btn'</span><span class="__shiki_1pf2xz">).</span><span class="__shiki_2fxx5c">onclick</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> function</span><span class="__shiki_1pf2xz"> () {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">alert</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'click me'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+</li>
+</ul>
+<p>DOM0级事件具有以下特点：</p>
+<ol>
+<li>DOM0级事件添加后，后添加的同类型事件会覆盖前面已添加的事件</li>
+<li>DOM0级事件具有很有跨浏览器优势，但由于绑定速度太快，可能页面还没完全加载出来，以至于事件可能无法正常执行</li>
+</ol>
+<h2 id="dom2级事件" tabindex="-1">DOM2级事件</h2>
+<p>主流浏览器主要通过以下两个方法用来处理绑定和删除事件程序的操作：</p>
+<ul>
+<li>addEventListener</li>
+<li>removeEventListener</li>
+</ul>
+<p>示例：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> btn </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> document.</span><span class="__shiki_2fxx5c">getElementById</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'btn'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1pf2xz">btn.</span><span class="__shiki_2fxx5c">addEventListener</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'click'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_13ief6">function</span><span class="__shiki_1pf2xz"> () {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'callback A'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">});</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1pf2xz">btn.</span><span class="__shiki_2fxx5c">addEventListener</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'click'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_13ief6">function</span><span class="__shiki_1pf2xz"> () {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'callback B'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">});</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1pf2xz">btn.</span><span class="__shiki_2fxx5c">addEventListener</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'click'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_13ief6">function</span><span class="__shiki_1pf2xz"> () {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'callback C'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">});</span></span>
+<span class="line"></span></code></pre>
+<p>DOM2级事件的特点：</p>
+<ol>
+<li>可以对同一元素多次绑定相同类型的事件</li>
+<li>多个同类型的事件在触发时会依次执行回调</li>
+</ol>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">DOM0级事件与DOM2级事件</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="https://wiskewu.github.io/posts/dom0级事件与dom2级事件/" class="q6DmLG_infoCardLink">https://wiskewu.github.io/posts/dom0级事件与dom2级事件/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2022/10/23 21:11:53</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></main><aside class="q6DmLG_tocAside"><nav aria-label="目录"><div class="q6DmLG_tocTitle">目录</div><ul class="q6DmLG_tocList"><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#dom0级事件">DOM0级事件</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#dom2级事件">DOM2级事件</a></li></ul></nav></aside></div><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/notenoteblog/feed.xml">RSS</a></div></div></footer></div><script src="https://wiskewu.github.io/notenoteblog/assets/js/client.a5ad98fc.js"></script></body></html>

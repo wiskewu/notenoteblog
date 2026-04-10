@@ -1,0 +1,172 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>Command Line Api Reference - Adiós</title><link href="https://wiskewu.github.io/notenoteblog/favicon.ico" rel="icon" /><link title="RSS" href="https://wiskewu.github.io/notenoteblog/feed.xml" type="application/atom+xml" rel="alternate" /><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="https://wiskewu.github.io/notenoteblog/assets/css/style.1eadc58a.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="_1BqNCq_layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/notenoteblog/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/notenoteblog/">首页</a><a href="/notenoteblog/til/">TIL</a><a href="/notenoteblog/archives/">归档</a><a href="/notenoteblog/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><div class="q6DmLG_postLayout"><main class="q6DmLG_article"><div class="q6DmLG_postHeader"><h1 class="q6DmLG_postTitle">Command Line Api Reference</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2022/9/4 16:39:40</time></span><span class="q6DmLG_metaItem">17 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/notenoteblog/tags/#devtools/">devtools</a></div></div></div><div class="yRPMta_markdownContent"><h2 id="简介" tabindex="-1">简介</h2>
+<p><code>Command Line API</code>是<code>Google Chrome</code>浏览器为开发者提供的执行常见任务的工具函数集合。包含了一些快捷函数用于快速选择和审查DOM元素、启动和停止分析器、监听DOM事件等。</p>
+<h2 id="快速开始" tabindex="-1">快速开始</h2>
+<p><code>Command Line API</code>仅能在<code>Chrome DevTools Console</code>中使用。如果尝试在脚本中调用它们，它们将无法工作。</p>
+<p>可以使用下述方式快速了解当前Chrome提供了哪些Command Line API：</p>
+<ol>
+<li>
+<p>创建以下html文件：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-html"><span class="line"><span class="__shiki_1pf2xz">&#x3C;!</span><span class="__shiki_frrhl8">DOCTYPE</span><span class="__shiki_1r536h"> html</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">html</span><span class="__shiki_1r536h"> lang</span><span class="__shiki_1pf2xz">=</span><span class="__shiki_50d5g0">"en"</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">head</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">meta</span><span class="__shiki_1r536h"> charset</span><span class="__shiki_1pf2xz">=</span><span class="__shiki_50d5g0">"UTF-8"</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">meta</span><span class="__shiki_1r536h"> name</span><span class="__shiki_1pf2xz">=</span><span class="__shiki_50d5g0">"viewport"</span><span class="__shiki_1r536h"> content</span><span class="__shiki_1pf2xz">=</span><span class="__shiki_50d5g0">"width=device-width, initial-scale=1.0"</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">title</span><span class="__shiki_1pf2xz">>Document&#x3C;/</span><span class="__shiki_frrhl8">title</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="__shiki_1pf2xz">&#x3C;/</span><span class="__shiki_frrhl8">head</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">body</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">&#x3C;</span><span class="__shiki_frrhl8">script</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> keyList </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> Reflect.</span><span class="__shiki_2fxx5c">ownKeys</span><span class="__shiki_1pf2xz">(window);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">&#x3C;/</span><span class="__shiki_frrhl8">script</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="__shiki_1pf2xz">&#x3C;/</span><span class="__shiki_frrhl8">body</span><span class="__shiki_1pf2xz">></span></span>
+<span class="line"><span class="__shiki_1pf2xz">&#x3C;/</span><span class="__shiki_frrhl8">html</span><span class="__shiki_1pf2xz">></span></span></code></pre>
+</li>
+<li>
+<p>使用chrome打开上述html，并打开调试控制台，输入以下内容：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> keyList2 </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> Reflect.</span><span class="__shiki_2fxx5c">ownKeys</span><span class="__shiki_1pf2xz">(window);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">keyList2.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">key</span><span class="__shiki_13ief6">=>!</span><span class="__shiki_1pf2xz">keyList.</span><span class="__shiki_2fxx5c">includes</span><span class="__shiki_1pf2xz">(key));</span></span></code></pre>
+</li>
+<li>
+<p>回车即可得到当前chrome提供的所有内置Command Line API</p>
+</li>
+</ol>
+<p>(上述原理实际上就是因为在调试控制台可以获取到挂载在window下特有的属性，而在普通脚本里是获取不到的)</p>
+<p>接下来，让我们逐个了解这些API吧。</p>
+<h2 id="_" tabindex="-1">$_</h2>
+<p><code>$_</code>返回最近一次计算表达式执行的结果。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-$_.png" alt="$_" tabindex="0" loading="lazy"><figcaption>$_</figcaption></figure>
+<h2 id="0-4" tabindex="-1">$0 - $4</h2>
+<p><strong>开发者工具</strong>会缓存我们在<strong>元素</strong>选项卡（或配置文件面板）中选择的最后五个 DOM 元素（或 JavaScript 堆对象）, 并分别使用<code>$0</code>、<code>$1</code>、<code>$2</code>、<code>$3</code>、<code>$4</code>表示。</p>
+<p>其中，<code>$0</code>表示上一次选择的元素或JS对象，<code>$1</code>表示倒数第二次选择的元素或JS对象，并依次类推，<code>$4</code>表示倒数第五次选择元素或JS对象。</p>
+<p>如下图，从上至下依次点击dom节点，查看缓存的节点内容：</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-$0-$4.gif" alt="0-4" tabindex="0" loading="lazy"><figcaption>$0-$4</figcaption></figure>
+<h2 id="selector" tabindex="-1">$(selector)</h2>
+<p><code>$</code>提供类似于<code>JQuery</code>的选择器功能，返回特定 CSS 选择器代表的第一个 DOM 节点元素。这个函数实际上是<code>document.querySelector()</code>的别名。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-$.png" alt="" tabindex="0" loading="lazy"><figcaption>$</figcaption></figure>
+<h2 id="selector-1" tabindex="-1">$$(selector)</h2>
+<p>与<code>$</code>类似，<code>$$</code>作为<code>document.querySelectorAll()</code>的别名函数，返回匹配给定 CSS 选择器的 DOM 元素集合。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-$.png" alt="$" tabindex="0" loading="lazy"><figcaption>$$</figcaption></figure>
+<h2 id="x-xpath" tabindex="-1">$x(xpath)</h2>
+<p>返回匹配给定<code>XPath</code>的 DOM 节点集合。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-$x.gif" alt="x" tabindex="0" loading="lazy"><figcaption>$x</figcaption></figure>
+<blockquote>
+<p>XPath语法可参见<a href="https://www.runoob.com/xpath/xpath-tutorial.html">此处</a></p>
+</blockquote>
+<h2 id="clear" tabindex="-1">clear()</h2>
+<p>清除控制台内容。与<code>console.clear()</code>等价。</p>
+<h2 id="copy-object" tabindex="-1">copy(object)</h2>
+<p>将指定对象以字符串表示形式复制到剪贴板。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-copy.gif" alt="copy" tabindex="0" loading="lazy"><figcaption>copy</figcaption></figure>
+<blockquote>
+<p>通常会与调试断点时拷贝变量值配合使用。</p>
+</blockquote>
+<h2 id="debug-function-undebug-function" tabindex="-1">debug(function) &amp; undebug(function)</h2>
+<p>当调用指定的函数时，调试器将被调用，并会在 <code>Sources</code> 面板上的函数内部中断，从而能够单步执行代码并对其进行调试。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-debug.gif" alt="debug" tabindex="0" loading="lazy"><figcaption>debug</figcaption></figure>
+<p>可以使用<code>undebug(function)</code>停止断点，或使用<code>Sources</code> 面板上的UI进行断点控制。</p>
+<h2 id="dir-obj" tabindex="-1">dir(obj)</h2>
+<p>以对象形式显示指定对象的所有属性列表。此方法是 <code>console.dir()</code> 的别名。</p>
+<p>下面的例子显示了直接打印<code>document.body</code>与使用<code>dir(document.object)</code>的区别：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(document.body); </span><span class="__shiki_25oonp">// 节点树</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">dir</span><span class="__shiki_1pf2xz">(document.body); </span><span class="__shiki_25oonp">// 对象节点</span></span></code></pre>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-dir.png" alt="dir" tabindex="0" loading="lazy"><figcaption>dir</figcaption></figure>
+<h2 id="dirxml-object" tabindex="-1">dirxml(object)</h2>
+<p>打印指定对象的 <code>XML</code> 表示，如 <code>Elements</code> 选项卡中所示。此方法等价于 <code>console.dirxml()</code> 方法。</p>
+<p>显示一个明确的 <code>XML/HTML</code> 元素的包括所有后代元素的交互树。如果无法作为一个 <code>element</code> 被显示，那么会以 JavaScript 对象的形式作为替代。它的输出是一个继承的扩展的节点列表，可以让你看到子节点的内容。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-dirxml.png" alt="dirxml" tabindex="0" loading="lazy"><figcaption>dirxml</figcaption></figure>
+<h2 id="inspect-object-function" tabindex="-1">inspect(object/function)</h2>
+<p>在适当的面板中打开并选择指定的元素或对象：若为DOM 元素，则打开 <code>Elements</code> 面板；若为 JavaScript 堆对象，则打开 <code>Profiles</code> 面板。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">inspect</span><span class="__shiki_1pf2xz">(document.body.firstChild);</span></span></code></pre>
+<p>当传递一个函数进行检查时，调用该函数时，它将在 <code>Sources</code> 面板中打开它供我们检查。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-inspect.gif" alt="inspect" tabindex="0" loading="lazy"><figcaption>inspect</figcaption></figure>
+<h2 id="geteventlisteners-object" tabindex="-1">getEventListeners(object)</h2>
+<p>返回在指定对象上注册的事件监听器。返回值是一个对象，包含每个注册的事件类型的数组（例如，&quot;click&quot;或 &quot;keydown&quot;）。每个数组的成员是描述为每种类型注册的监听器的对象。</p>
+<p>例如，下面列出了在文档对象上注册的所有事件监听器。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">getEventListeners</span><span class="__shiki_1pf2xz">(document);</span></span></code></pre>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-getEventListeners.png" alt="getEventListeners" tabindex="0" loading="lazy"><figcaption>getEventListeners</figcaption></figure>
+<p>如果在指定的对象上注册了一个以上的监听器，那么这个数组就包含了每个监听器的成员。</p>
+<h2 id="keys-object-values-object" tabindex="-1">keys(object) &amp; values(object)</h2>
+<p><code>keys(object)</code>返回一个数组，其中包含属于指定对象的属性的键名。</p>
+<p><code>values(object)</code>返回一个数组，其中包含属于指定对象的属性的值。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-keys.png" alt="keys" tabindex="0" loading="lazy"><figcaption>keys</figcaption></figure>
+<h2 id="monitor-function-unmonitor-function" tabindex="-1">monitor(function) &amp; unmonitor(function)</h2>
+<p>当调用指定的函数时，控制台会记录一条消息，指示函数名称以及在调用函数时传递给函数的参数。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-monitor.png" alt="monitor" tabindex="0" loading="lazy"><figcaption>monitor</figcaption></figure>
+<p>使用<code>unmonitor(function)</code>停止监视。</p>
+<h2 id="monitorevents-object-events" tabindex="-1">monitorEvents(object[, events])</h2>
+<p>当一个指定的事件发生在指定的对象上时，事件对象被记录到控制台。你可以指定一个单一的事件来监视，一个事件数组，或者一个通用的事件 &quot;类型&quot;，这些事件被映射到一个预定义的事件集合。</p>
+<p>如下监听了window的点击事件：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">monitorEvents</span><span class="__shiki_1pf2xz">(window, [</span><span class="__shiki_50d5g0">"click"</span><span class="__shiki_1pf2xz">]);</span></span></code></pre>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-monitorEvents.gif" alt="monitorEvents" tabindex="0" loading="lazy"><figcaption>monitorEvents</figcaption></figure>
+<p>我们还可以指定一种可用的事件&quot;类型&quot;，即映射到预定义事件集的字符串。下表列出了可用的事件类型及其关联的事件映射：</p>
+<table>
+<thead>
+<tr>
+<th>事件类型</th>
+<th>类型映射</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mouse</td>
+<td>&quot;click&quot;, &quot;dblclick&quot;, &quot;mousedown&quot;, &quot;mouseeenter&quot;, &quot;mouseleave&quot;, &quot;mousemove&quot;, &quot;mouseout&quot;, &quot;mouseover&quot;, &quot;mouseup&quot;, &quot;mouseleave&quot;, &quot;mousewheel&quot;</td>
+</tr>
+<tr>
+<td>keyboard</td>
+<td>&quot;keydown&quot;, &quot;keyup&quot;, &quot;keypress&quot;, &quot;textInput&quot;</td>
+</tr>
+<tr>
+<td>touch</td>
+<td>&quot;touchstart&quot;, &quot;touchmove&quot;, &quot;touchend&quot;, &quot;touchcancel&quot;</td>
+</tr>
+<tr>
+<td>control</td>
+<td>&quot;resize&quot;, &quot;scroll&quot;, &quot;zoom&quot;, &quot;focus&quot;, &quot;blur&quot;, &quot;select&quot;, &quot;change&quot;, &quot;submit&quot;, &quot;reset&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>例如，使用&quot;key&quot;事件类型监听 window 的所有对应键事件。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">monitorEvents</span><span class="__shiki_1pf2xz">(window, </span><span class="__shiki_50d5g0">"key"</span><span class="__shiki_1pf2xz">);</span></span></code></pre>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-monitorEvents-02.png" alt="monitorEvents" tabindex="0" loading="lazy"><figcaption>monitorEvents</figcaption></figure>
+<h2 id="unmonitorevents-object-events" tabindex="-1">unmonitorEvents(object[, events])</h2>
+<p>停止监视指定对象和事件的事件。</p>
+<p>例如，停止对 window 对象的所有事件监视：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">unmonitorEvents</span><span class="__shiki_1pf2xz">(window);</span></span></code></pre>
+<p>你也可以有选择地停止监视一个对象上的特定事件。例如，下面的代码开始监视当前选定元素上的所有鼠标事件，然后停止监视 &quot;mousemove &quot;事件（也许是为了减少控制台输出的噪音）:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">monitorEvents</span><span class="__shiki_1pf2xz">($0, </span><span class="__shiki_50d5g0">"mouse"</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_2fxx5c">unmonitorEvents</span><span class="__shiki_1pf2xz">($0, </span><span class="__shiki_50d5g0">"mousemove"</span><span class="__shiki_1pf2xz">);</span></span></code></pre>
+<blockquote>
+<p>查看<a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/console.md#monitoring-events">更多示例</a></p>
+</blockquote>
+<h2 id="profile-name" tabindex="-1">profile([name])</h2>
+<p>使用可选名称启动 <code>JavaScript CPU</code> 分析会话。若完成分析可调用<code>profileEnd([name])</code>;</p>
+<p>开始分析:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">profile</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'test'</span><span class="__shiki_1pf2xz">);</span></span></code></pre>
+<p>完成分析：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">profileEnd</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'test'</span><span class="__shiki_1pf2xz">);</span></span></code></pre>
+<p>嵌套分析：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_2fxx5c">profile</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'A'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_2fxx5c">profile</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'B'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_2fxx5c">profileEnd</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'A'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_2fxx5c">profileEnd</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'B'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 性能分析报告"A"已开始。</span></span>
+<span class="line"><span class="__shiki_25oonp">// 性能分析报告"B"已开始。</span></span>
+<span class="line"><span class="__shiki_25oonp">// 性能分析报告"A"已完成。</span></span>
+<span class="line"><span class="__shiki_25oonp">// 性能分析报告"B"已完成。</span></span></code></pre>
+<blockquote>
+<p>在chrome浏览器上测试使用时似乎没有效果...需追踪和确认。</p>
+</blockquote>
+<h2 id="profileend-name" tabindex="-1">profileEnd([name])</h2>
+<p>停止使用 <code>profile()</code> 方法启动的当前分析会话，并在 <code>Profiles</code> 面板中显示结果。</p>
+<h2 id="table-data-columns" tabindex="-1">table(data[, columns])</h2>
+<p>通过传入带有可选列标题的数据对象(对象数组或类对象数组)，使用表格记录对象数据。与<code>console.table()</code>方法等价。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/command-line-api-table.png" alt="table" tabindex="0" loading="lazy"><figcaption>table</figcaption></figure>
+<h2 id="其他api" tabindex="-1">其他API</h2>
+<p>Chrome 扩展可以在命令行 API 中注入额外的辅助方法。例如，<a href="https://chrome.google.com/webstore/detail/debug-utils/djailkkojeahmihdpcelmmobkpepmkcl">Debug Utils 扩展</a> (<a href="https://github.com/amasad/debug_utils">github</a>) 提供了用于中断属性访问、事件触发和方法调用的钩子。</p>
+<h2 id="参考" tabindex="-1">参考</h2>
+<ul>
+<li><a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/commandline-api.md">commandline-api</a></li>
+</ul>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">Command Line Api Reference</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="https://wiskewu.github.io/posts/command-line-api-reference/" class="q6DmLG_infoCardLink">https://wiskewu.github.io/posts/command-line-api-reference/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2022/9/4 16:39:40</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></main><aside class="q6DmLG_tocAside"><nav aria-label="目录"><div class="q6DmLG_tocTitle">目录</div><ul class="q6DmLG_tocList"><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#简介">简介</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#快速开始">快速开始</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#_">$_</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#0-4">$0 - $4</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#selector">$(selector)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#selector-1">$$(selector)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#x-xpath">$x(xpath)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#clear">clear()</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#copy-object">copy(object)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#debug-function-undebug-function">debug(function) &amp; undebug(function)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#dir-obj">dir(obj)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#dirxml-object">dirxml(object)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#inspect-object-function">inspect(object/function)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#geteventlisteners-object">getEventListeners(object)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#keys-object-values-object">keys(object) &amp; values(object)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#monitor-function-unmonitor-function">monitor(function) &amp; unmonitor(function)</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#monitorevents-object-events">monitorEvents(object[, events])</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#unmonitorevents-object-events">unmonitorEvents(object[, events])</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#profile-name">profile([name])</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#profileend-name">profileEnd([name])</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#table-data-columns">table(data[, columns])</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#其他api">其他API</a></li><li class="q6DmLG_tocItem " data-toc-item="true" data-toc-level="2"><a class="q6DmLG_tocLink" href="#参考">参考</a></li></ul></nav></aside></div><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/notenoteblog/feed.xml">RSS</a></div></div></footer></div><script src="https://wiskewu.github.io/notenoteblog/assets/js/client.a5ad98fc.js"></script></body></html>
