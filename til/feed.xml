@@ -5,6 +5,47 @@
   <link href="til/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-04-06T14:28:14.990Z</updated>
-
+  <updated>2026-04-10T10:08:27.213Z</updated>
+  <entry>
+    <title>TIL 2026/4/10 17:41:49</title>
+    <link href="/til/杀死那个写代码的人/" />
+    <id>/til/杀死那个写代码的人/</id>
+    <updated>2026/4/10 17:41:49T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;杀死那个写代码的人&quot; tabindex=&quot;-1&quot;&gt;杀死那个写代码的人&lt;/h2&gt;
+&lt;p&gt;“问题是复杂的，但你可以通过自己的思考，把它变得清晰、可控、甚至优雅。”&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;---摘自&lt;a href=&quot;https://windliang.wang/2026/03/31/%E6%9D%80%E6%AD%BB%E9%82%A3%E4%B8%AA%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E4%BA%BA&quot;&gt;杀死那个写代码的人&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</content>
+  </entry>
+  <entry>
+    <title>TIL 2026/4/10 10:53:51</title>
+    <link href="/til/命令提示符快速查看系统内存使用情况/" />
+    <id>/til/命令提示符快速查看系统内存使用情况/</id>
+    <updated>2026/4/10 10:53:51T00:00:00+08:00</updated>
+    <content type="html">&lt;h1 id=&quot;命令提示符快速查看系统内存使用情况&quot; tabindex=&quot;-1&quot;&gt;命令提示符快速查看系统内存使用情况&lt;/h1&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cmd&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;systeminfo | findstr /i /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;物理内存总量&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;可用的物理内存&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;虚拟内存: 最大值&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;虚拟内存: 可用&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;虚拟内存: 使用中&quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;输出如下：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;物理内存总量:     32,455 MB&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;可用的物理内存:   15,409 MB&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;虚拟内存: 最大值: 62,151 MB&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;虚拟内存: 可用:   35,950 MB&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;虚拟内存: 使用中: 26,201 MB&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+</content>
+  </entry>
+  <entry>
+    <title>TIL 2026/2/26 00:59:14</title>
+    <link href="/til/配置windows开机自启动程序/" />
+    <id>/til/配置windows开机自启动程序/</id>
+    <updated>2026/2/26 00:59:14T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;配置windows开机自启动程序&quot; tabindex=&quot;-1&quot;&gt;配置windows开机自启动程序&lt;/h2&gt;
+&lt;p&gt;此操作适用于希望在电脑刚启动的时候执行应用快捷方式或批处理文件。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;按下&lt;code&gt;win + R&lt;/code&gt;，输入&lt;code&gt;shell:startup&lt;/code&gt;回车，会打开一个&amp;quot;启动文件夹&amp;quot;&lt;/li&gt;
+&lt;li&gt;将需要执行的应用程序快捷方式或批处理文件放入该&amp;quot;启动文件夹&amp;quot;中即可&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;参考链接&quot; tabindex=&quot;-1&quot;&gt;参考链接&lt;/h2&gt;
+&lt;p&gt;技巧来自于文章&lt;a href=&quot;https://www.51it.wang/ll/2163&quot;&gt;Windows 配置用户远程登录系统后执行脚本&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
 </feed>
