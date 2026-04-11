@@ -5,7 +5,40 @@
   <link href="til/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-04-10T16:41:20.165Z</updated>
+  <updated>2026-04-11T06:15:16.715Z</updated>
+  <entry>
+    <title>TIL 2026/4/11 12:10:55</title>
+    <link href="/til/是什么毁了javascript/" />
+    <id>/til/是什么毁了javascript/</id>
+    <updated>2026/4/11 12:10:55T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;是什么毁了javascript&quot; tabindex=&quot;-1&quot;&gt;是什么毁了JavaScript&lt;/h2&gt;
+&lt;p&gt;JS几乎可以做“任何”事情，但强大伴随着未知的风险和负担。作者在文中讨论了JavaScript 语言本身、人们如何使用它、NPM 生态如何塑造了今天的 Web 开发体验。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- 关于JS这门动态语言的诞生、让人感觉混乱的地方
+- 关于JS无处不在的过度抽象
+- 关于JS的依赖地狱和供应链投毒
+- 关于网页交互的越界
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更多内容看这里：&lt;a href=&quot;https://www.geedea.pro/article/js-problem/&quot;&gt;什么毁了 JavaScript？&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>TIL 2026/4/11 11:59:50</title>
+    <link href="/til/github-actions市场/" />
+    <id>/til/github-actions市场/</id>
+    <updated>2026/4/11 11:59:50T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;github-actions市场&quot; tabindex=&quot;-1&quot;&gt;Github Actions市场&lt;/h2&gt;
+&lt;p&gt;看看别人造的轮子：&lt;a href=&quot;https://github.com/marketplace?type=actions&quot;&gt;actions&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>TIL 2026/4/11 11:34:03</title>
+    <link href="/til/编程语言的流行程度/" />
+    <id>/til/编程语言的流行程度/</id>
+    <updated>2026/4/11 11:34:03T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;编程语言的流行程度&quot; tabindex=&quot;-1&quot;&gt;编程语言的流行程度&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.tiobe.com/tiobe-index/&quot;&gt;Tiobe-Index&lt;/a&gt;: 查看当下流行的语言，关注语言流行趋势。&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>TIL 2026/4/11 00:01:26</title>
     <link href="/til/build-your-own-react/" />
