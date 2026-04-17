@@ -5,7 +5,129 @@
   <link href="/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-04-13T12:19:14.744Z</updated>
+  <updated>2026-04-17T09:03:59.743Z</updated>
+  <entry>
+    <title>Windows Terminal分屏与调整尺寸常用快捷键</title>
+    <link href="/posts/windows-terminal分屏与调整尺寸常用快捷键/" />
+    <id>/posts/windows-terminal分屏与调整尺寸常用快捷键/</id>
+    <updated>2026/4/17 15:54:07T00:00:00+08:00</updated>
+    <content type="html">&lt;div class=&quot;markdown-alert markdown-alert-note&quot;&gt;
+&lt;p class=&quot;markdown-alert-title&quot;&gt;Note&lt;/p&gt;
+&lt;p&gt;此博客灵感来源来自&lt;a href=&quot;https://blog.myshawn.com/blog/windows-terminal-%E5%88%86%E5%B1%8F%E4%B8%8E%E8%B0%83%E6%95%B4%E5%BF%AB%E6%8D%B7%E9%94%AE/&quot;&gt;Windows Terminal 分屏与调整常用快捷键总结&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;此处记录 WindowsTerminal 终端窗口分屏和调整大小的常用操作快捷键。&lt;/p&gt;
+&lt;h2 id=&quot;窗口分屏&quot; tabindex=&quot;-1&quot;&gt;窗口分屏&lt;/h2&gt;
+&lt;p&gt;将当前的标签页分割为多个独立运行的窗口。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;操作项目&lt;/th&gt;
+&lt;th&gt;默认快捷键&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;垂直分屏&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + +&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;将窗口左右平分，增加一个垂直边界&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;水平分屏&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + -&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;将窗口上下平分，增加一个水平边界&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;自动分屏&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + D&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;自动根据长宽比选额最佳方向进行分屏&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&quot;调整窗格大小&quot; tabindex=&quot;-1&quot;&gt;调整窗格大小&lt;/h2&gt;
+&lt;p&gt;选中目标窗格后，通过以下组合键微调边界位置。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;操作项目&lt;/th&gt;
+&lt;th&gt;默认快捷键&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;向左调整大小&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + ←&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;向右调整大小&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + →&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;向上调整大小&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + ↑&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;向下调整大小&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + ↓&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&quot;导航与管理&quot; tabindex=&quot;-1&quot;&gt;导航与管理&lt;/h2&gt;
+&lt;p&gt;在多个分屏之间快速切换或者关闭。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;操作项目&lt;/th&gt;
+&lt;th&gt;默认快捷键&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;切换焦点&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + 方向键&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;将光标移动到相邻的窗格&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;关闭窗格&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Alt + Shift + W&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;关闭当前光标所在的窗格&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&quot;更多设置&quot; tabindex=&quot;-1&quot;&gt;更多设置&lt;/h2&gt;
+&lt;p&gt;使用快捷键&lt;code&gt;CTRL + ,&lt;/code&gt;打开设置界面，选择「操作」菜单，修改和查看更多快捷键功能。&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/windows-terminal-keybindings--00.png&quot; alt=&quot;操作快捷键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;操作快捷键&lt;/figcaption&gt;&lt;/figure&gt;
+</content>
+  </entry>
+  <entry>
+    <title>微软拼音输入法中英文标点误切问题</title>
+    <link href="/posts/微软拼音输入法中英文标点误切问题/" />
+    <id>/posts/微软拼音输入法中英文标点误切问题/</id>
+    <updated>2026/4/17 14:57:20T00:00:00+08:00</updated>
+    <content type="html">&lt;p&gt;使用微软自带的拼音输入法，有时会出现这样的问题：输入中文的逗号&lt;code&gt;，&lt;/code&gt;显示的却是英文的逗号&lt;code&gt;,&lt;/code&gt;。可以按照下述方法修复。&lt;/p&gt;
+&lt;h2 id=&quot;一键修复&quot; tabindex=&quot;-1&quot;&gt;一键修复&lt;/h2&gt;
+&lt;p&gt;使用快捷键&lt;code&gt;CTRL + .&lt;/code&gt;（Ctrl + 句号）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;按下一次：切回中文标点&lt;code&gt;，。&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;再按一次：切回英文标点&lt;code&gt;,.&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;关闭快捷键&quot; tabindex=&quot;-1&quot;&gt;关闭快捷键&lt;/h2&gt;
+&lt;p&gt;按照以下步骤查看快捷键以及关闭快捷键：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;右键状态栏输入法图标&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/windows-inputmethod-zh-symbols--00.png&quot; alt=&quot;右键输入法图标&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;右键输入法图标&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;打开设置，选择按键&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/windows-inputmethod-zh-symbols--01.png&quot; alt=&quot;按键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;按键&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;在“中/英文标点切换”处，查看当前绑定的快捷键，或者关闭快捷键&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/windows-inputmethod-zh-symbols--02.png&quot; alt=&quot;快捷键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;快捷键&lt;/figcaption&gt;&lt;/figure&gt;
+</content>
+  </entry>
   <entry>
     <title>PowerShell设置Alias别名命令</title>
     <link href="/posts/powershell设置alias别名命令/" />
@@ -1041,126 +1163,6 @@ AICoding -&amp;gt; 跑用例 -&amp;gt; 失败后重新Coding尝试 -&amp;gt; 跑
 &lt;li&gt;向后兼容：便于 API 版本管理和迁移&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;code&gt;namespace&lt;/code&gt;提供了面向大型项目的、类型安全的、渐进可拆分的代码组织方案，特别适合需要良好架构设计和长期维护的 Typescript 项目。&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>通过媒体查询精确控制鼠标在元素上的悬停样式</title>
-    <link href="/posts/通过媒体查询精确控制鼠标在元素上的悬停样式/" />
-    <id>/posts/通过媒体查询精确控制鼠标在元素上的悬停样式/</id>
-    <updated>2026/1/20 23:59:14T00:00:00+08:00</updated>
-    <content type="html">&lt;p&gt;在阅读&lt;a href=&quot;https://github.com/puckeditor/puck/blob/f8012b3c4a3dcef153a420f45840e136bdcc572c/packages/core/components/Button/Button.module.css#L57&quot;&gt;Puck -Button&lt;/a&gt;源码时，看到模块样式中使用以下写法：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;.Button--primary&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;background&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;--puck-color-azure-04&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;);&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;@media&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;hover&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;hover&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;) &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;and&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (pointer: fine) {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;.Button--primary:hover&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;--puck-color-azure-03&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;);&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;之前没见过这种媒体查询的写法，便网上查询了资料写下这篇文章。&lt;/p&gt;
-&lt;h2 id=&quot;解释&quot; tabindex=&quot;-1&quot;&gt;解释&lt;/h2&gt;
-&lt;p&gt;这段CSS代码使用**媒体查询（Media Query）**来实现精细化悬停效果控制。确保悬停颜色变化只会在桌面端鼠标操作时显示，在手机平板上会自动禁用，以提供更合适的用户体验。&lt;/p&gt;
-&lt;div class=&quot;markdown-alert markdown-alert-tip&quot;&gt;
-&lt;p class=&quot;markdown-alert-title&quot;&gt;Tip&lt;/p&gt;
-&lt;p&gt;当用户鼠标移入按钮时，按钮颜色从var(--puck-color-azure-04)变为var(--puck-color-azure-03)；
-当用户鼠标移出时，按钮颜色恢复为var(--puck-color-azure-04)&lt;/p&gt;
-&lt;/div&gt;
-&lt;p&gt;效果如下。
-鼠标未移入按钮时效果：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/how-media-query-control-style--00.png&quot; alt=&quot;鼠标未移入&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;鼠标未移入&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;p&gt;鼠标移入按钮时效果：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/how-media-query-control-style--01.png&quot; alt=&quot;鼠标移入&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;鼠标移入&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;h3 id=&quot;hover-hover&quot; tabindex=&quot;-1&quot;&gt;hover: hover&lt;/h3&gt;
-&lt;p&gt;这里的&lt;code&gt;(hover: hover)&lt;/code&gt;分为前后两部分，前一个&lt;code&gt;hover&lt;/code&gt;是用于检测设备是否支持悬停效果。后一个&lt;code&gt;hover&lt;/code&gt;是两个可选值中的一种：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;hover&lt;/code&gt;: 表示支持悬停效果，如台式机鼠标，触控板&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;none&lt;/code&gt;: 表示不支持悬停效果，如手机、平板等触屏设备&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;即存在下述两种写法：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;@media&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;hover&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;hover&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;) {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;/* 支持悬停效果时，设置样式 */&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;@media&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;hover&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: none) {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;/* 不支持悬停效果时，设置样式 */&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;pointer-fine&quot; tabindex=&quot;-1&quot;&gt;pointer: fine&lt;/h3&gt;
-&lt;p&gt;这里的&lt;code&gt;(pointer: fine)&lt;/code&gt;分为前后两部分，前一个&lt;code&gt;pointer&lt;/code&gt;是用于检测指针设备是否精确，后一个&lt;code&gt;fine&lt;/code&gt;是三个可选值中的一种：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;fine&lt;/code&gt;: 表示具备鼠标、触控笔等精确指针&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;coarse&lt;/code&gt;: 表示具备手指触控等不精确指针&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;none&lt;/code&gt;: 表示无指针设备&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;即存在下述三种写法：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;@media&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (pointer: fine) {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;/* 支持精确指针，设置样式 */&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;@media&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (pointer: coarse) {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;/* 支持不精确指针，设置样式 */&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;@media&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (pointer: none) {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;/* 不支持指针，设置样式 */&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;设计意图&quot; tabindex=&quot;-1&quot;&gt;设计意图&lt;/h2&gt;
-&lt;p&gt;这种写法的核心目的是：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;设备适配精准：只为真正需要悬停反馈的设备提供效果，避免在触屏设备上产生混乱的视觉反馈&lt;/li&gt;
-&lt;li&gt;移动端友好：手机上没有不必要的颜色闪烁&lt;/li&gt;
-&lt;li&gt;辅助功能考虑：对某些特殊输入设备更友好，避免对屏幕阅读器等造成干扰&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;官方文档&quot; tabindex=&quot;-1&quot;&gt;官方文档&lt;/h2&gt;
-&lt;p&gt;以下是MDN上关于hover和pointer规则的详细说明：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/At-rules/@media/hover&quot;&gt;at rule - hover&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/pointer&quot;&gt;at rule - pointer&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-  </entry>
-  <entry>
-    <title>配置Git Bash作为Windows Terminal选项</title>
-    <link href="/posts/配置git-bash作为windows-terminal选项/" />
-    <id>/posts/配置git-bash作为windows-terminal选项/</id>
-    <updated>2026/1/8 13:14:54T00:00:00+08:00</updated>
-    <content type="html">&lt;p&gt;Windows Terminal 默认识别到的终端可能不包含Git Bash，将Git Bash集成到终端中，能够极大方便终端管理和切换。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/gitbash-on-windows-terminal--00.png&quot; alt=&quot;默认不带Bash&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;默认不带Bash&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;h2 id=&quot;准备工作&quot; tabindex=&quot;-1&quot;&gt;准备工作&lt;/h2&gt;
-&lt;p&gt;首先确保电脑已经安装了&lt;code&gt;Git&lt;/code&gt;软件。使用支持&lt;code&gt;bash&lt;/code&gt;的终端查看：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; bash&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;#输出&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# C:\Windows\System32\bash.exe&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# C:\Users\DELL\AppData\Local\Microsoft\WindowsApps\bash.exe&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# D:\Programs\Git\usr\bin\bash.exe&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;可以知道，&lt;code&gt;D:\Programs\Git\usr\bin\bash.exe&lt;/code&gt;是Git Bash所在的目录。&lt;/p&gt;
-&lt;h2 id=&quot;配置&quot; tabindex=&quot;-1&quot;&gt;配置&lt;/h2&gt;
-&lt;p&gt;按照以下步骤操作：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;打开Windows Terminal软件；&lt;/li&gt;
-&lt;li&gt;在标签页右侧下拉选项中，打开&amp;quot;设置&amp;quot;，或使用&lt;code&gt;ctrl+&lt;/code&gt;,快捷键打开设置；&lt;/li&gt;
-&lt;li&gt;在左侧配置文件中，点击&amp;quot;添加新配置文件&amp;quot;-&amp;quot;新建空配置文件&amp;quot;；&lt;/li&gt;
-&lt;li&gt;名称填写&amp;quot;GitBash&amp;quot;；&lt;/li&gt;
-&lt;li&gt;命令行填写上述输出的&lt;code&gt;&amp;quot;D:\Programs\Git\usr\bin\bash.exe --login&amp;quot;&lt;/code&gt;；&lt;/li&gt;
-&lt;li&gt;点击右下角的&amp;quot;保存&amp;quot;即可。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;完整配置如下：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/gitbash-on-windows-terminal--01.png&quot; alt=&quot;配置示例&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;配置示例&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;p&gt;或使用&lt;code&gt;json&lt;/code&gt;格式配置：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;{&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;&quot;commandline&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;D:&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;Programs&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;Git&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;usr&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;bash.exe --login&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;,&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;&quot;guid&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;{f1d2a988-6f53-41e2-b1f9-44c6d75135cd}&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;,&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;&quot;hidden&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;,&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;GitBash&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&quot;markdown-alert markdown-alert-tip&quot;&gt;
-&lt;p class=&quot;markdown-alert-title&quot;&gt;Tip&lt;/p&gt;
-&lt;p&gt;命令行如果只配置&amp;quot;D:\Programs\Git\usr\bin\bash.exe&amp;quot;可能会导致bash shell能启动，但缺少必要的&lt;code&gt;PATH&lt;/code&gt;环境变量，导致无法找到&lt;code&gt;ls&lt;/code&gt;、&lt;code&gt;ll&lt;/code&gt;、&lt;code&gt;dir&lt;/code&gt;等命令。此时便可以添加&lt;code&gt;--login&lt;/code&gt;参数以使用完整的bash功能。&lt;/p&gt;
-&lt;/div&gt;
-&lt;h2 id=&quot;使用&quot; tabindex=&quot;-1&quot;&gt;使用&lt;/h2&gt;
-&lt;p&gt;此时在终端的标签页下拉选项中就可以看到刚才新的GitBash选项，启动之后可以执行bash命令，如&lt;code&gt;ll&lt;/code&gt;。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/gitbash-on-windows-terminal--02.png&quot; alt=&quot;效果图&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;效果图&lt;/figcaption&gt;&lt;/figure&gt;
 </content>
   </entry>
 </feed>
