@@ -1,0 +1,74 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>yarn设置注册表源 - Adiós</title><link href="https://wiskewu.github.io/notenoteblog/favicon.ico" rel="icon" /><link title="RSS" href="https://wiskewu.github.io/notenoteblog/feed.xml" type="application/atom+xml" rel="alternate" /><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="https://wiskewu.github.io/notenoteblog/assets/css/style.4572f53b.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="_1BqNCq_layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/notenoteblog/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/notenoteblog/">首页</a><a href="/notenoteblog/til/">TIL</a><a href="/notenoteblog/archives/">归档</a><a href="/notenoteblog/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><main class="QvVcXW_articleLayout"><div class="QvVcXW_articleContainer"><div class="QvVcXW_articleHeader"><h1 class="QvVcXW_articleTitle">yarn设置注册表源</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/4/21 15:51:06</time></span><span class="q6DmLG_metaItem">6 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/notenoteblog/tags/#yarn/">yarn</a></div></div></div><div class="yRPMta_markdownContent"><h2 id="背景" tabindex="-1">背景</h2>
+<p>在使用<code>yarn config set registry &quot;http://192.168.25.57:8081/repository/npm-group/&quot;</code>，出现以下错误提示：</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/yarn-config-set-registry--00.png" alt="注册表设置错误" tabindex="0" loading="lazy"><figcaption>注册表设置错误</figcaption></figure>
+<h2 id="核心原因" tabindex="-1">核心原因</h2>
+<p>排查后，发现是由于不同版本API变化导致的。当前使用的是 Yarn 2+（Berry，包括 v2/v3/v4），而 <code>registry</code> 配置项和 <code>yarn config set registry</code> 命令，是 Yarn 1.x（Classic）的用法，在新版本中已被废弃。</p>
+<p>查看当前版本：</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/yarn-config-set-registry--01.png" alt="v3.2.4" tabindex="0" loading="lazy"><figcaption>v3.2.4</figcaption></figure>
+<h3 id="版本差异对比" tabindex="-1">版本差异对比</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Yarn 1.x (Classic)</th>
+<th>Yarn 2+ (Berry)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>配置文件</td>
+<td><code>.yarnrc</code></td>
+<td><code>.yarnrc.yml</code></td>
+</tr>
+<tr>
+<td>注册表配置项</td>
+<td><code>registry</code></td>
+<td><code>npmRegistryServer</code></td>
+</tr>
+<tr>
+<td>设置命令</td>
+<td><code>yarn config set registry &lt;url&gt;</code></td>
+<td>不支持直接用 <code>registry</code>，需修改配置文件或用新命令</td>
+</tr>
+</tbody>
+</table>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p>题外话，Yarn大版本更新，直接不考虑向后兼容了，不知道出于何种考虑，感觉有些粗暴。。。</p>
+</div>
+<h2 id="解决办法" tabindex="-1">解决办法</h2>
+<h3 id="yarn-2-berry" tabindex="-1">Yarn@2+(Berry)</h3>
+<h4 id="方法一-直接修改项目配置文件" tabindex="-1">方法一：直接修改项目配置文件</h4>
+<p>在项目根目录编辑或创建 <code>.yarnrc.yml</code>文件，添加以下内容：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-yml"><span class="line"><span class="__shiki_frrhl8">npmRegistryServer</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_50d5g0">"http://192.168.25.57:8081/repository/npm-group/"</span></span>
+<span class="line"><span class="__shiki_25oonp"># 如需设置全局源，可编辑 ~/.yarnrc.yml</span></span></code></pre>
+<h4 id="方法二-新版本命令" tabindex="-1">方法二：新版本命令</h4>
+<p>Yarn 2+ 中，注册表配置项名称改为 <code>npmRegistryServer</code>，可直接用 <code>config set</code> 设置：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-bash"><span class="line"><span class="__shiki_1g8orr">yarn</span><span class="__shiki_50d5g0"> config</span><span class="__shiki_50d5g0"> set</span><span class="__shiki_50d5g0"> npmRegistryServer</span><span class="__shiki_50d5g0"> "http://192.168.25.57:8081/repository/npm-group/"</span></span></code></pre>
+<h4 id="yn0001错误处理" tabindex="-1">YN0001错误处理</h4>
+<p>设置完源之后，执行<code>yarn</code>安装依赖，出现以下错误信息：</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/yarn-config-set-registry--02.png" alt="YN0001 error" tabindex="0" loading="lazy"><figcaption>YN0001 error</figcaption></figure>
+<p>这个 YN0001 错误是 Yarn 2+（Berry 系列，当前用的是 Yarn 3.2.4）的安全机制导致的：Yarn 默认会拒绝所有 HTTP（非 HTTPS）协议的请求，以防止中间人攻击。当前私有仓库地址 <code>http://192.168.25.57:8081/...</code> 使用了 HTTP，需要手动将该地址加入白名单。</p>
+<h5 id="添加白名单" tabindex="-1">添加白名单</h5>
+<p>修改项目根目录的 <code>.yarnrc.yml</code> 文件，在文件中添加 <code>unsafeHttpWhitelist</code> 配置，把私有仓库主机地址加入白名单：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-yml"><span class="line"><span class="__shiki_25oonp"># 你的私有仓库地址</span></span>
+<span class="line"><span class="__shiki_frrhl8">npmRegistryServer</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_50d5g0">"http://192.168.25.57:8081/repository/npm-group/"</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp"># 允许 HTTP 请求的白名单</span></span>
+<span class="line"><span class="__shiki_frrhl8">unsafeHttpWhitelist</span><span class="__shiki_1pf2xz">:</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">- </span><span class="__shiki_50d5g0">"192.168.25.57"</span><span class="__shiki_25oonp">  # 直接写IP，也可以用通配符 "*.168.25.57"</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp"># 如需允许其他 HTTP 仓库，可继续添加</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp"># - "registry.npmmirror.com"</span></span></code></pre>
+<p>保存后，重新执行<code>yarn</code>即可。</p>
+<h3 id="yarn-1-classic" tabindex="-1">Yarn@1+(Classic)</h3>
+<p>如果更习惯旧版用法，可以考虑降级：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-bash"><span class="line"><span class="__shiki_25oonp"># 卸载当前 Yarn（如果是通过 npm 安装的）</span></span>
+<span class="line"><span class="__shiki_1g8orr">npm</span><span class="__shiki_50d5g0"> uninstall</span><span class="__shiki_1r536h"> -g</span><span class="__shiki_50d5g0"> yarn</span></span>
+<span class="line"><span class="__shiki_25oonp"># 安装 Yarn 1.x 最新版</span></span>
+<span class="line"><span class="__shiki_1g8orr">npm</span><span class="__shiki_50d5g0"> install</span><span class="__shiki_1r536h"> -g</span><span class="__shiki_50d5g0"> yarn@1</span></span>
+<span class="line"><span class="__shiki_25oonp"># 验证版本</span></span>
+<span class="line"><span class="__shiki_1g8orr">yarn</span><span class="__shiki_1r536h"> --version</span><span class="__shiki_25oonp"> # 输出 1.x.x 即为成功</span></span>
+<span class="line"><span class="__shiki_25oonp"># 再执行原命令即可生效</span></span>
+<span class="line"><span class="__shiki_1g8orr">yarn</span><span class="__shiki_50d5g0"> config</span><span class="__shiki_50d5g0"> set</span><span class="__shiki_50d5g0"> registry</span><span class="__shiki_50d5g0"> http://192.168.25.57:8081/repository/npm-group/</span></span></code></pre>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">yarn设置注册表源</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="https://wiskewu.github.io/posts/yarn设置注册表源/" class="q6DmLG_infoCardLink">https://wiskewu.github.io/posts/yarn设置注册表源/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/4/21 15:51:06</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></div><aside class="QvVcXW_tocAside"><nav aria-label="目录"><div class="QvVcXW_tocTitle">目录</div><ul class="QvVcXW_tocList"><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#背景">背景</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#核心原因">核心原因</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#版本差异对比">版本差异对比</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#解决办法">解决办法</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#yarn-2-berry">Yarn@2+(Berry)</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#方法一-直接修改项目配置文件">方法一：直接修改项目配置文件</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#方法二-新版本命令">方法二：新版本命令</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#yn0001错误处理">YN0001错误处理</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#添加白名单">添加白名单</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#yarn-1-classic">Yarn@1+(Classic)</a></li></ul></nav></aside><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div></main><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/notenoteblog/links/">链接</a><a href="/notenoteblog/feed.xml">RSS</a></div></div></footer></div><script src="https://wiskewu.github.io/notenoteblog/assets/js/client.62da5cb0.js"></script></body></html>

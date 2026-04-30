@@ -1,0 +1,997 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>JS中的Iteration迭代 - Adiós</title><link href="https://wiskewu.github.io/notenoteblog/favicon.ico" rel="icon" /><link title="RSS" href="https://wiskewu.github.io/notenoteblog/feed.xml" type="application/atom+xml" rel="alternate" /><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="https://wiskewu.github.io/notenoteblog/assets/css/style.4572f53b.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="_1BqNCq_layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/notenoteblog/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/notenoteblog/">首页</a><a href="/notenoteblog/til/">TIL</a><a href="/notenoteblog/archives/">归档</a><a href="/notenoteblog/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><main class="QvVcXW_articleLayout"><div class="QvVcXW_articleContainer"><div class="QvVcXW_articleHeader"><h1 class="QvVcXW_articleTitle">JS中的Iteration迭代</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/4/24 14:12:11</time></span><span class="q6DmLG_metaItem">49 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/notenoteblog/tags/#Javascript/">Javascript</a></div></div></div><div class="yRPMta_markdownContent"><h2 id="前言" tabindex="-1">前言</h2>
+<p>ES6引入了<code>for...of</code>循环语法，减少标准循环的复杂性和避免记录循环索引导致的索引越界问题。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> ranks </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_50d5g0">'A'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'B'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'C'</span><span class="__shiki_1pf2xz">];</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> rank </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> ranks) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(rank);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p><code>for...of</code>语法相比于<code>for</code>循环更加优雅一些，因为它更加明确循环的意图：迭代数组以访问序列中的每个元素。除此之外，<code>for...of</code>循环还可以迭代任何<strong>可迭代</strong>的对象，而不仅仅只是迭代一个数组。</p>
+<p>要理解可迭代对象，首先需要理解<strong>迭代协议</strong>。</p>
+<h2 id="迭代协议" tabindex="-1">迭代协议</h2>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p>根据<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols#%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%8D%8F%E8%AE%AE">MDN-迭代协议</a>描述，迭代协议并不是新的内置实现或语法，而是协议。这些协议可以被任何遵循某些约定的对象来实现。
+迭代协议具体分为两个协议：<strong>可迭代协议</strong>（iterable protocol）和<strong>迭代器协议</strong>（iterator protocol）。</p>
+</div>
+<p>在继续阅读下文时，有三个概念需要熟悉：</p>
+<ul>
+<li>可迭代的对象：一个可迭代的对象，是具有返回迭代器对象的特殊迭代器方法的任何对象；</li>
+<li>迭代器对象本身：迭代器是指任何具有实现<code>next()</code>方法，并返回迭代结果对象的对象；</li>
+<li>迭代结果：一个具备<code>value</code>和<code>done</code>属性的对象；</li>
+</ul>
+<h3 id="可迭代协议" tabindex="-1">可迭代协议</h3>
+<p>要成为可迭代对象，该对象必须实现<code>[Symbol.iterator]()</code>方法。</p>
+<ul>
+<li>该方法不接收任何参数；</li>
+<li>该方法返回一个遵循迭代器协议的对象；</li>
+<li>此函数可以是普通函数，也可以是生成器函数（Generator），在生成器内部，可以使用<code>yield</code>提供每一项值；</li>
+</ul>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator">Symbol.iterator</a>是 ES6 引入的内置<code>symbols</code>之一。</p>
+</div>
+<h3 id="迭代器协议" tabindex="-1">迭代器协议</h3>
+<p>迭代器协议定义了产生一系列值（无论是有限个还是无限个）的标准方式，当值为有限个时，所有的值都被迭代完毕后，则会返回一个默认返回值。</p>
+<p>一个对象，只要实现具备以下语义的<code>next()</code>方法，就可以视为迭代器：</p>
+<blockquote>
+<p><code>next()</code></p>
+<p>无参数或者接受一个参数的函数。并返回符合<code>InteratorResult</code>接口的对象。</p>
+<p><code>return(value)</code>（可选的函数）</p>
+<p>无参数或者接受一个参数的函数，其返回符合<code>InteratorResult</code>接口的对象。调用这个方法表明迭代器的调用者不打算调用更多的 <code>next()</code>，并且可以进行清理工作。</p>
+<p><code>throw(exception)</code>（可选的函数）</p>
+<p>无参数或者接受一个参数的函数，其返回符合<code>InteratorResult</code>接口的对象。调用这个方法表明迭代器的调用者监测到错误的状况，并且 <code>exception</code> 通常是一个 <code>Error</code> 实例。</p>
+</blockquote>
+<h4 id="interatorresult接口" tabindex="-1">InteratorResult接口</h4>
+<p>所有迭代器的方法（<code>next()</code>、<code>return()</code>、<code>throw()</code>）都应返回实现<code>InteratorResult</code>的接口，接口定义如下：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-ts"><span class="line"><span class="__shiki_13ief6">interface</span><span class="__shiki_1g8orr"> IteratorResult</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1g8orr">done</span><span class="__shiki_13ief6">?:</span><span class="__shiki_1r536h"> boolean</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1g8orr">value</span><span class="__shiki_13ief6">?:</span><span class="__shiki_1r536h"> any</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p>即，当调用<code>next()</code>函数时，只可能返回两种情况：</p>
+<ol>
+<li>迭代未结束时，返回：</li>
+</ol>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-json"><span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">{</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"done"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_1r536h">false</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"value"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_50d5g0">"任何值"</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<ol start="2">
+<li>迭代结束时，返回：</li>
+</ol>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-json"><span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">{</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"done"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_frrhl8">"value"</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_1vtg3k">undefined</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<h4 id="可迭代迭代器" tabindex="-1">可迭代迭代器</h4>
+<p>一个迭代器实现了<code>[Symbol.iterator]()</code>方法，并返回<code>this</code>，则此迭代器变为可迭代迭代器。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> myIterator</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// ...</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p>大部分内置的语法或者API，都期望接受一个可迭代迭代器作为参数。如：<code>Map()</code>、<code>Set()</code>、<code>Promise.all()</code>、<code>Promise.allSettled()</code>、<code>Promise.any()</code>等，见下文。</p>
+<h2 id="迭代器" tabindex="-1">迭代器</h2>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p>迭代器维护着一个指向可迭代对象的引用，因此迭代器会阻止垃圾回收程序回收可迭代对象</p>
+</div>
+<h3 id="检查是否可迭代" tabindex="-1">检查是否可迭代</h3>
+<p>很多内置类型都实现了 <code>Iterable</code> 接口，比如：</p>
+<ul>
+<li>字符串</li>
+<li>数组</li>
+<li>映射</li>
+<li>集合</li>
+<li><code>arguments</code>对象</li>
+<li><code>NodeList</code>等DOM集合类型</li>
+</ul>
+<p>检查是否存在默认迭代器属性（<code>Symbol.iterator</code>）可以暴露这个工厂函数：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> str </span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0"> 'Hello world!'</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> obj </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> {};</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(str[Symbol.iterator]); </span><span class="__shiki_25oonp">// ƒ [Symbol.iterator]() { [native code] }</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(obj[Symbol.iterator]); </span><span class="__shiki_25oonp">// undefined</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 调用这个工厂函数会生成一个迭代器</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> iterator </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> str[Symbol.iterator]();</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(iterator); </span><span class="__shiki_25oonp">// StringIterator {}</span></span></code></pre>
+<h3 id="支持迭代器的原生语言" tabindex="-1">支持迭代器的原生语言</h3>
+<p>实际写代码过程中，不需要显式调用这个工厂函数来生成迭代器。在一些原生语言中，会自动兼容接收可迭代对象的特性。接收可迭代对象的原生语言特性包括：</p>
+<ul>
+<li><code>for...of</code>循环</li>
+<li>数组解构</li>
+<li>扩展操作符</li>
+<li><code>Array.from()</code></li>
+<li>创建<code>Set</code>、<code>WeakSet</code></li>
+<li>创建<code>Map</code>、<code>WeakMap</code></li>
+<li><code>Promise.all()</code></li>
+<li><code>Promise.race()</code></li>
+<li><code>Promise.allSettled()</code></li>
+<li><code>Promise.any()</code></li>
+<li><code>Object.groupBy()</code></li>
+<li><code>Map.groupBy()</code></li>
+<li><code>yield*</code>操作符，在生成器中使用</li>
+</ul>
+<p>这些原生语言结构会自动调用提供的可迭代对象的这个工厂函数，从而创建一个迭代器:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> iterableObj </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">data: [</span><span class="__shiki_50d5g0">'Javascript'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Java'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Rust'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Python'</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 实现可迭代的协议</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> index </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> data </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">.data;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 实现 Iterator 接口，返回新的迭代器对象</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 实现迭代器协议</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (index </span><span class="__shiki_13ief6">&#x3C;</span><span class="__shiki_1pf2xz"> data.</span><span class="__shiki_1r536h">length</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: data[index</span><span class="__shiki_13ief6">++</span><span class="__shiki_1pf2xz">] };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* for...of 循环</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> item </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> iterableObj) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(item);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 'Javascript'</span></span>
+<span class="line"><span class="__shiki_25oonp">// 'Java'</span></span>
+<span class="line"><span class="__shiki_25oonp">// 'Rust'</span></span>
+<span class="line"><span class="__shiki_25oonp">// 'Python'</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* 数组解构</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> [a, b, c, d] </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> iterableObj;</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(a, b, c, d); </span><span class="__shiki_25oonp">// Javascript Java Rust Python</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* 扩展操作符</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">([</span><span class="__shiki_13ief6">...</span><span class="__shiki_1pf2xz">iterableObj]); </span><span class="__shiki_25oonp">// ['Javascript', 'Java', 'Rust', 'Python']</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Array.from()</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(Array.</span><span class="__shiki_2fxx5c">from</span><span class="__shiki_1pf2xz">(iterableObj)); </span><span class="__shiki_25oonp">// ['Javascript', 'Java', 'Rust', 'Python']</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Set 构造函数</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> set </span><span class="__shiki_13ief6">=</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> Set</span><span class="__shiki_1pf2xz">(iterableObj);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(set); </span><span class="__shiki_25oonp">// Set(4) {'Javascript', 'Java', 'Rust', 'Python'}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">/**</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_25oonp">* Map 构造函数</span></span>
+<span class="line"><span class="__shiki_25oonp">*/</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> pairs </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> Array.</span><span class="__shiki_2fxx5c">from</span><span class="__shiki_1pf2xz">(iterableObj).</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">((</span><span class="__shiki_1g8orr">value</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">index</span><span class="__shiki_1pf2xz">) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> [index, value]);</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> map </span><span class="__shiki_13ief6">=</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> Map</span><span class="__shiki_1pf2xz">(pairs);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(map); </span><span class="__shiki_25oonp">// Map(4) {0 => 'Javascript', 1 => 'Java', 2 => 'Rust', 3 => 'Python'}</span></span></code></pre>
+<h3 id="让类成为迭代器" tabindex="-1">让类成为迭代器</h3>
+<p>要让类变成迭代器，需符合<strong>可迭代协议</strong>:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">class</span><span class="__shiki_1g8orr"> Range</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">constructor</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">from</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">to</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1r536h">this</span><span class="__shiki_1pf2xz">.from </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> from;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1r536h">this</span><span class="__shiki_1pf2xz">.to   </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> to;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> next </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> Math.</span><span class="__shiki_2fxx5c">ceil</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">this</span><span class="__shiki_1pf2xz">.from);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> last </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">.to;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (next </span><span class="__shiki_13ief6">&#x3C;=</span><span class="__shiki_1pf2xz"> last) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: next</span><span class="__shiki_13ief6">++</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// eg</span></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">of</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> Range</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">10</span><span class="__shiki_1pf2xz">)) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(x); </span><span class="__shiki_25oonp">// log 1~10</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_13ief6">...new</span><span class="__shiki_2fxx5c"> Range</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_13ief6">-</span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">)); </span><span class="__shiki_25oonp">// -2,-1,0,1,2</span></span></code></pre>
+<p>一般情况下，都会利用<strong>闭包</strong>的机制，使得一个可迭代对象能够创建多个迭代器。</p>
+<h3 id="函数返回可迭代" tabindex="-1">函数返回可迭代</h3>
+<p>除了让类可迭代，还可以让函数返回可迭代的迭代器。</p>
+<h4 id="示例-map函数" tabindex="-1">示例：map函数</h4>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">iterable</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">fn</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> iterator </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> iterable[Symbol.iterator]();</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() { </span><span class="__shiki_13ief6">return</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">; },</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> result </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> iterator.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (result.done) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> result;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_2fxx5c">fn</span><span class="__shiki_1pf2xz">(result.value) };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// usage</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_13ief6">...</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_13ief6">new</span><span class="__shiki_2fxx5c"> Range</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">,</span><span class="__shiki_1r536h">4</span><span class="__shiki_1pf2xz">), </span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">*</span><span class="__shiki_1pf2xz"> x)) </span><span class="__shiki_25oonp">// 1,4,9,16</span></span></code></pre>
+<h4 id="示例-filter函数" tabindex="-1">示例：filter函数</h4>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">iterable</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">predicate</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> iterator </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> iterable[Symbol.iterator]();</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() { </span><span class="__shiki_13ief6">return</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">; },</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz">(;;) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> result </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> iterator.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (result.done </span><span class="__shiki_13ief6">||</span><span class="__shiki_2fxx5c"> predicate</span><span class="__shiki_1pf2xz">(result.value)) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> result;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// usage</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_13ief6">...</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_13ief6">new</span><span class="__shiki_2fxx5c"> Range</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">10</span><span class="__shiki_1pf2xz">), </span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">%</span><span class="__shiki_1r536h"> 2</span><span class="__shiki_13ief6"> ===</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">)); </span><span class="__shiki_25oonp">// 2 4 6 8 10</span></span></code></pre>
+<h3 id="提前终止迭代器" tabindex="-1">提前终止迭代器</h3>
+<p>可选<code>return()</code>方法用于指定在迭代器提前关闭时执行的逻辑。即迭代器未完全迭代便提前退出，可能情况为：</p>
+<ul>
+<li><code>for...of</code>循环通过<code>break</code>、<code>continue</code>、<code>return</code>或<code>throw</code>提前退出；</li>
+<li>解构操作并未消费所有值；</li>
+</ul>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p><code>return()</code>方法必须返回一个有效的 <code>IteratorResult</code> 对象，一般可以只返回<code>{ done: true }</code>，这个返回值只会用在生成器的上下文中。</p>
+</div>
+<p>如下代码，JS发现还有更多值可以迭代但不会消费这些值时，会自动调用<code>return()</code>方法。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> iterableObj </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">data: [</span><span class="__shiki_50d5g0">'Javascript'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Java'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Rust'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Python'</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> index </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> data </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">.data;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (index </span><span class="__shiki_13ief6">&#x3C;</span><span class="__shiki_1pf2xz"> data.</span><span class="__shiki_1r536h">length</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: data[index</span><span class="__shiki_13ief6">++</span><span class="__shiki_1pf2xz">] };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'iterableObj迭代提前终止'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> item </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> iterableObj) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (item </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'Java'</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">break</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(item);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 打印：'Javascript' 'iterableObj迭代提前终止'</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">try</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> item </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> iterableObj) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (item </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'Java'</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">throw</span><span class="__shiki_50d5g0"> 'err'</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(item);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">} </span><span class="__shiki_13ief6">catch</span><span class="__shiki_1pf2xz">(e) {}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 打印：'Javascript' 'iterableObj迭代提前终止'</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 解构部分值</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> [a, b] </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> iterableObj;</span></span>
+<span class="line"><span class="__shiki_25oonp">// 打印：'iterableObj迭代提前终止'</span></span></code></pre>
+<h4 id="不可终止的迭代器" tabindex="-1">不可终止的迭代器</h4>
+<p>有些迭代器是不可提前终止的，比如<strong>数组的迭代器就是不可终止的</strong>，如果迭代器没有终止，则还可以从上次离开的地方继续迭代：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> a </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">4</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">];</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> iter </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> a[Symbol.iterator]();</span></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> i </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> iter) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(i);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (i </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 2</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">break</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 1</span></span>
+<span class="line"><span class="__shiki_25oonp">// 2</span></span>
+<span class="line"><span class="__shiki_25oonp">// 3</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> i </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> iter) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(i);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 4</span></span>
+<span class="line"><span class="__shiki_25oonp">// 5</span></span></code></pre>
+<p>一个不可终止的迭代器即使添加了<code>return()</code>方法，也并不会将其变为可终止。这种情况下，<code>return()</code>函数可以正常被执行，但迭代器不会被强制终止。</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> a </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">4</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">];</span></span>
+<span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> iter </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> a[Symbol.iterator]();</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1pf2xz">iter.</span><span class="__shiki_2fxx5c">return</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> function</span><span class="__shiki_1pf2xz"> () {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'提前退出'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="__shiki_1pf2xz">};</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> i </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> iter) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(i);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (i </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 2</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">break</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 1</span></span>
+<span class="line"><span class="__shiki_25oonp">// 2</span></span>
+<span class="line"><span class="__shiki_25oonp">// 3</span></span>
+<span class="line"><span class="__shiki_25oonp">// 提前退出</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> i </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> iter) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(i);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 4</span></span>
+<span class="line"><span class="__shiki_25oonp">// 5</span></span></code></pre>
+<h3 id="无限迭代器" tabindex="-1">无限迭代器</h3>
+<p>可以创建一个永远不会主动终止的迭代器：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> idIterable </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> id </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { done: </span><span class="__shiki_1r536h">false</span><span class="__shiki_1pf2xz">, value: id</span><span class="__shiki_13ief6">++</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> idCreator</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> idIterable[Symbol.iterator]();</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(idCreator.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">()); </span><span class="__shiki_25oonp">// {done: false, value: 0}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(idCreator.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">()); </span><span class="__shiki_25oonp">// {done: false, value: 1}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(idCreator.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">()); </span><span class="__shiki_25oonp">// {done: false, value: 2}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 可以提前终止一个无限迭代器</span></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> id </span><span class="__shiki_13ief6">of</span><span class="__shiki_1pf2xz"> idIterable) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(id);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (id </span><span class="__shiki_13ief6">===</span><span class="__shiki_1r536h"> 10</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">break</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 打印1~10</span></span></code></pre>
+<h2 id="内置的js迭代器" tabindex="-1">内置的JS迭代器</h2>
+<p>以下都是内置的Javascript迭代器，摘自<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Iterator">Iterator</a>:</p>
+<ul>
+<li>数组迭代器，返回自<code>Array.prototype.values()</code>、<code>Array.prototype.keys()</code>、<code>Array.prototype.entries()</code>、<code>Array.prototype[Symbol.iterator]()</code>、<code>TypedArray.prototype.values()</code>、<code>TypedArray.prototype.keys()</code>、<code>TypedArray.prototype.entries()</code>、<code>TypedArray.prototype[Symbol.iterator]()</code> 和 <code>arguments[Symbol.iterator]()</code></li>
+<li>字符串迭代器，返回自<code>String.prototype[Symbol.iterator]()</code></li>
+<li>Map 迭代器，返回自<code>Map.prototype.values()</code>、<code>Map.prototype.keys()</code>、<code>Map.prototype.entries()</code> 和 <code>Map.prototype[Symbol.iterator]()</code></li>
+<li>Set 迭代器，返回自<code>Set.prototype.values()</code>、<code>Set.prototype.keys()</code>、<code>Set.prototype.entries()</code> 和 <code>Set.prototype[Symbol.iterator]()</code></li>
+<li>正则表达式字符串迭代器，返回自<code>RegExp.prototype[Symbol.matchAll]()</code> 和 <code>String.prototype.matchAll()</code></li>
+<li><code>Generator</code> 对象，返回自生成器函数</li>
+<li><code>Segment</code>迭代器，返回自 <code>Intl.Segmenter.prototype.segment()</code> 返回的 <code>Segments</code> 对象的 <code>[Symbol.iterator]()</code> 方法</li>
+<li>迭代器辅助方法，返回自迭代器辅助方法例如 <code>Iterator.prototype.filter()</code> 和 <code>Iterator.prototype.map()</code></li>
+</ul>
+<h3 id="使用迭代器作为可迭代对象" tabindex="-1">使用迭代器作为可迭代对象</h3>
+<p>所有内置迭代器都是可迭代的，因此可以在<code>for...of</code>循环中使用：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> arrIterator</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">].</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> value</span><span class="__shiki_13ief6"> of</span><span class="__shiki_1pf2xz"> arrIterator) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(value);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_25oonp">// 打印：1, 2, 3</span></span></code></pre>
+<h3 id="迭代器辅助函数" tabindex="-1">迭代器辅助函数</h3>
+<p>迭代器辅助函数（iterator helpers）用于提升开发者的工作效率。<code>Iterator</code> 类本身提供了一些使用迭代器的辅助方法。
+比如以下代码：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> nameToDeposit</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> Map</span><span class="__shiki_1pf2xz">([</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">"Anne"</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">1000</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">"Bert"</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">1500</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">"Carl"</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2000</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="__shiki_1pf2xz">]);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> totalDeposit</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_13ief6">...</span><span class="__shiki_1pf2xz">nameToDeposit.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">()].</span><span class="__shiki_2fxx5c">reduce</span><span class="__shiki_1pf2xz">((</span><span class="__shiki_1g8orr">a</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">b</span><span class="__shiki_1pf2xz">) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> a </span><span class="__shiki_13ief6">+</span><span class="__shiki_1pf2xz"> b);</span></span></code></pre>
+<p>可以直接简化为：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> totalDeposit</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> nameToDeposit.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">().</span><span class="__shiki_2fxx5c">reduce</span><span class="__shiki_1pf2xz">((</span><span class="__shiki_1g8orr">a</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">b</span><span class="__shiki_1pf2xz">) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> a </span><span class="__shiki_13ief6">+</span><span class="__shiki_1pf2xz"> b);</span></span></code></pre>
+<p>减少中间数组的使用，且只迭代迭代器一次。</p>
+<p>常见的迭代器辅助方法有：</p>
+<table>
+<thead>
+<tr>
+<th>迭代器辅助方法</th>
+<th>说明</th>
+<th>返回值</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Iterator.prototype.drop()</td>
+<td>跳过前n个值</td>
+<td>Iterator</td>
+<td>惰性</td>
+</tr>
+<tr>
+<td>Iterator.prototype.every()</td>
+<td>全部满足条件判断</td>
+<td>Boolean</td>
+<td>急切</td>
+</tr>
+<tr>
+<td>Iterator.prototype.filter()</td>
+<td>只保留满足条件的值</td>
+<td>Iterator</td>
+<td>惰性</td>
+</tr>
+<tr>
+<td>Iterator.prototype.find()</td>
+<td>查找首个匹配值，无匹配则为undefined</td>
+<td>Value</td>
+<td>急切</td>
+</tr>
+<tr>
+<td>Iterator.prototype.flatMap()</td>
+<td>映射后展平一层</td>
+<td>Iterator</td>
+<td>惰性</td>
+</tr>
+<tr>
+<td>Iterator.prototype.forEach()</td>
+<td>逐一执行副作用</td>
+<td>undefined</td>
+<td>急切</td>
+</tr>
+<tr>
+<td>Iterator.prototype.map()</td>
+<td>对每个值应用变换</td>
+<td>Iterator</td>
+<td>惰性</td>
+</tr>
+<tr>
+<td>Iterator.prototype.reduce()</td>
+<td>规约为单个值</td>
+<td>Iterator</td>
+<td>急切</td>
+</tr>
+<tr>
+<td>Iterator.prototype.some()</td>
+<td>存在性判断</td>
+<td>Boolean</td>
+<td>急切</td>
+</tr>
+<tr>
+<td>Iterator.prototype.take()</td>
+<td>只取前n个值</td>
+<td>Iterator</td>
+<td>惰性</td>
+</tr>
+<tr>
+<td>Iterator.prototype.toArray()</td>
+<td>转换为数组</td>
+<td>Array</td>
+<td>急切</td>
+</tr>
+<tr>
+<td><code>Iterator.prototype[Symbol.iterator]()</code></td>
+<td>返回迭代器对象本身。这使迭代器对象也是可迭代的</td>
+<td>this</td>
+<td>--</td>
+</tr>
+</tbody>
+</table>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p>这些方法是迭代器辅助方法，而不是可迭代对象辅助方法，因为可迭代对象的唯一要求就是具有 <code>[Symbol.iterator]()</code> 方法，因此它们没有共享的原型来安装这些方法。</p>
+</div>
+<p>还有一些静态方法：</p>
+<table>
+<thead>
+<tr>
+<th>静态方法</th>
+<th>说明</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Iterator.from()</code></td>
+<td>将迭代器或者可迭代对象转为“恰当”的迭代器</td>
+<td>Iterator</td>
+</tr>
+</tbody>
+</table>
+<h4 id="惰性求值" tabindex="-1">惰性求值</h4>
+<p>迭代器辅助函数默认是惰性的。</p>
+<p>传统的数组方法会立即处理所有内容：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 急切求值 - 立即处理所有元素</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> eager</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">4</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">`Mapping ${</span><span class="__shiki_1pf2xz">x</span><span class="__shiki_50d5g0">}`</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">*</span><span class="__shiki_1r536h"> 2</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">})</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 5</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 输出：Mapping 1, 2, 3, 4, 5</span></span>
+<span class="line"><span class="__shiki_25oonp">// 结果：[6, 8, 10]</span></span></code></pre>
+<p>而迭代器辅助函数只在消费时处理值：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 惰性求值 - 只处理需要的内容</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> lazy</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">4</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">`Mapping ${</span><span class="__shiki_1pf2xz">x</span><span class="__shiki_50d5g0">}`</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">*</span><span class="__shiki_1r536h"> 2</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">})</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 5</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 还没有任何输出！</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_13ief6">...</span><span class="__shiki_1pf2xz">lazy]</span></span>
+<span class="line"><span class="__shiki_25oonp">// 输出：Mapping 1, 2, 3</span></span>
+<span class="line"><span class="__shiki_25oonp">// 结果：[6, 8]</span></span></code></pre>
+<p>注意惰性版本在找到两个匹配值后就停止了，从不处理元素 4 和 5。这种效率在处理大数据集时变得至关重要。</p>
+<h4 id="性能与内存" tabindex="-1">性能与内存</h4>
+<p>迭代器辅助函数在以下场景下表现出色：</p>
+<ul>
+<li>处理大于可用内存的数据</li>
+<li>只需要结果的子集</li>
+<li>多个链式转换</li>
+<li>处理流或者实时数据</li>
+</ul>
+<p>在以下场景下，则不太适用：</p>
+<ul>
+<li>需要随机访问元素</li>
+<li>数据集很小且已在内存中</li>
+<li>需要多次遍历（迭代器是单次使用的，除非创建一个迭代器工厂函数）</li>
+</ul>
+<p>可以使用下面的代码进行测试（100万条数据，取前5条）：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 测试代码</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> logs</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Array.</span><span class="__shiki_2fxx5c">from</span><span class="__shiki_1pf2xz">({ length: </span><span class="__shiki_1r536h">1_000_000</span><span class="__shiki_1pf2xz"> }, (</span><span class="__shiki_1g8orr">_</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">i</span><span class="__shiki_1pf2xz">) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> ({</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">level: i </span><span class="__shiki_13ief6">%</span><span class="__shiki_1r536h"> 100</span><span class="__shiki_13ief6"> ===</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_13ief6"> ?</span><span class="__shiki_50d5g0"> 'error'</span><span class="__shiki_13ief6"> :</span><span class="__shiki_50d5g0"> 'info'</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">message: </span><span class="__shiki_50d5g0">`Log entry #${</span><span class="__shiki_1pf2xz">i</span><span class="__shiki_50d5g0">}`</span><span class="__shiki_1pf2xz">,</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}));</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 测试1: 传统 Array 方法</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">time</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Array methods'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result1</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> logs</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">log</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> log.level </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'error'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">slice</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">0</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">log</span><span class="__shiki_13ief6"> =></span><span class="__shiki_50d5g0"> `[${</span><span class="__shiki_1pf2xz">log</span><span class="__shiki_50d5g0">.</span><span class="__shiki_1pf2xz">level</span><span class="__shiki_50d5g0">}] ${</span><span class="__shiki_1pf2xz">log</span><span class="__shiki_50d5g0">.</span><span class="__shiki_1pf2xz">message</span><span class="__shiki_50d5g0">}`</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">timeEnd</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Array methods'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 测试2: Iterator Helpers</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">time</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Iterator Helpers'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result2</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> logs.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">log</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> log.level </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'error'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">log</span><span class="__shiki_13ief6"> =></span><span class="__shiki_50d5g0"> `[${</span><span class="__shiki_1pf2xz">log</span><span class="__shiki_50d5g0">.</span><span class="__shiki_1pf2xz">level</span><span class="__shiki_50d5g0">}] ${</span><span class="__shiki_1pf2xz">log</span><span class="__shiki_50d5g0">.</span><span class="__shiki_1pf2xz">message</span><span class="__shiki_50d5g0">}`</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">timeEnd</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Iterator Helpers'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 测试3: 手写 for 循环</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">time</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Manual loop'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result3</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [];</span></span>
+<span class="line"><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> log</span><span class="__shiki_13ief6"> of</span><span class="__shiki_1pf2xz"> logs) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (log.level </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'error'</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">result3.</span><span class="__shiki_2fxx5c">push</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">`[${</span><span class="__shiki_1pf2xz">log</span><span class="__shiki_50d5g0">.</span><span class="__shiki_1pf2xz">level</span><span class="__shiki_50d5g0">}] ${</span><span class="__shiki_1pf2xz">log</span><span class="__shiki_50d5g0">.</span><span class="__shiki_1pf2xz">message</span><span class="__shiki_50d5g0">}`</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (result3.</span><span class="__shiki_1r536h">length</span><span class="__shiki_13ief6"> ===</span><span class="__shiki_1r536h"> 5</span><span class="__shiki_1pf2xz">) </span><span class="__shiki_13ief6">break</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">timeEnd</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Manual loop'</span><span class="__shiki_1pf2xz">);</span></span></code></pre>
+<p>可以参考以下数据（摘自网络，环境为 Nodejs 22.0/V8 12.4）进行对比：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>执行时间</th>
+<th>内存分配</th>
+<th>元素遍历数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Array methods</td>
+<td>~45ms</td>
+<td>~800KB（中间数组）</td>
+<td>1,000,000</td>
+</tr>
+<tr>
+<td>Iterator Helpers</td>
+<td>~0.8ms</td>
+<td>~0KB（无中间数组）</td>
+<td>~401</td>
+</tr>
+<tr>
+<td>Manual loop</td>
+<td>~0.6ms</td>
+<td>~0KB</td>
+<td>~401</td>
+</tr>
+</tbody>
+</table>
+<p>结论：迭代器辅助函数的性能接近手写循环（仅慢30%左右），但相比传统Array方法，快50倍以上，且没有中间内存分配。</p>
+<h4 id="浏览器支持" tabindex="-1">浏览器支持</h4>
+<p>内置的迭代器辅助函数可以在以下浏览器中支持：</p>
+<ul>
+<li>Chrome 122+</li>
+<li>Firefox 131+</li>
+<li>Safari 18.4+</li>
+<li>Node.js 22+</li>
+</ul>
+<p>对于较旧的环境，使用polyfill:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-bash"><span class="line"><span class="__shiki_1g8orr">npm</span><span class="__shiki_50d5g0"> install</span><span class="__shiki_50d5g0"> es-iterator-helpers</span></span></code></pre>
+<p>或者使用<a href="https://github.com/zloirock/core-js"><code>core-js</code></a>。</p>
+<h4 id="示例" tabindex="-1">示例</h4>
+<h5 id="示例-dom操作的函数式改写" tabindex="-1">示例：DOM操作的函数式改写</h5>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 获取页面中所有标题包含 "API" 的文章链接</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> apiLinks</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> document.</span><span class="__shiki_2fxx5c">querySelectorAll</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'article h2'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">()                                    </span><span class="__shiki_25oonp">// → Iterator</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">el</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> el.textContent.</span><span class="__shiki_2fxx5c">includes</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'API'</span><span class="__shiki_1pf2xz">))</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">el</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> el.</span><span class="__shiki_2fxx5c">closest</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'article'</span><span class="__shiki_1pf2xz">).</span><span class="__shiki_2fxx5c">querySelector</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'a'</span><span class="__shiki_1pf2xz">).href)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">();</span></span></code></pre>
+<p>不再需要 <code>[...nodeList].filter(...)</code> 这种先展开再操作的写法。</p>
+<h5 id="示例-map-set的链式操作" tabindex="-1">示例：Map/Set的链式操作</h5>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> scores</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> Map</span><span class="__shiki_1pf2xz">([</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">'Alice'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">92</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">'Bob'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">67</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">'Carol'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">85</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">'Dave'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">45</span><span class="__shiki_1pf2xz">],</span></span>
+<span class="line"><span class="__shiki_1pf2xz">]);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 找出所有及格的学生名字</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> passed</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> scores.</span><span class="__shiki_2fxx5c">entries</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(([</span><span class="__shiki_1g8orr">_</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">score</span><span class="__shiki_1pf2xz">]) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> score </span><span class="__shiki_13ief6">>=</span><span class="__shiki_1r536h"> 60</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(([</span><span class="__shiki_1g8orr">name</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">_</span><span class="__shiki_1pf2xz">]) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> name)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// → ['Alice', 'Bob', 'Carol']</span></span></code></pre>
+<h5 id="示例-与flatmap的组合" tabindex="-1">示例：与flatMap的组合</h5>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> departments</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> Map</span><span class="__shiki_1pf2xz">([</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">'Engineering'</span><span class="__shiki_1pf2xz">, [</span><span class="__shiki_50d5g0">'Alice'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Bob'</span><span class="__shiki_1pf2xz">]],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">'Design'</span><span class="__shiki_1pf2xz">, [</span><span class="__shiki_50d5g0">'Carol'</span><span class="__shiki_1pf2xz">]],</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[</span><span class="__shiki_50d5g0">'Product'</span><span class="__shiki_1pf2xz">, [</span><span class="__shiki_50d5g0">'Dave'</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_50d5g0">'Eve'</span><span class="__shiki_1pf2xz">]],</span></span>
+<span class="line"><span class="__shiki_1pf2xz">]);</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 将所有部门的员工扁平化为一个序列</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> allEmployees</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> departments.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">flatMap</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">members</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> members)  </span><span class="__shiki_25oonp">// 数组是可迭代对象，flatMap 会迭代其元素</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// → ['Alice', 'Bob', 'Carol', 'Dave', 'Eve']</span></span></code></pre>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p>注意：与 <code>Array.prototype.flatMap()</code> 不同，<code>Iterator.prototype.flatMap</code> 的回调必须返回一个迭代器或可迭代对象，不能返回普通值。</p>
+</div>
+<h5 id="示例-api分页" tabindex="-1">示例：API分页</h5>
+<p>高效处理分页API（这里使用了<code>Async Iterator Helpers</code>）：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">async</span><span class="__shiki_13ief6"> function*</span><span class="__shiki_2fxx5c"> fetchAllUsers</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">apiUrl</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> page </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 1</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">while</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> response</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> await</span><span class="__shiki_2fxx5c"> fetch</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">`${</span><span class="__shiki_1pf2xz">apiUrl</span><span class="__shiki_50d5g0">}?page=${</span><span class="__shiki_1pf2xz">page</span><span class="__shiki_50d5g0">}`</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1r536h">data</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">hasMore</span><span class="__shiki_1pf2xz"> } </span><span class="__shiki_13ief6">=</span><span class="__shiki_13ief6"> await</span><span class="__shiki_1pf2xz"> response.</span><span class="__shiki_2fxx5c">json</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> user</span><span class="__shiki_13ief6"> of</span><span class="__shiki_1pf2xz"> data) </span><span class="__shiki_13ief6">yield</span><span class="__shiki_1pf2xz"> user</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">!</span><span class="__shiki_1pf2xz">hasMore) </span><span class="__shiki_13ief6">break</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">page</span><span class="__shiki_13ief6">++</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 处理用户而不加载所有页面</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> premiumUsers</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> await</span><span class="__shiki_2fxx5c"> fetchAllUsers</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'/api/users'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">user</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> user.subscription </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'premium'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">user</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> ({ id: user.id, email: user.email }))</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">50</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">()</span></span></code></pre>
+<h5 id="示例-文件流处理" tabindex="-1">示例：文件流处理</h5>
+<p>逐行处理大文件，不用将整个文件加载到内存中：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">async</span><span class="__shiki_13ief6"> function*</span><span class="__shiki_2fxx5c"> readLines</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">file</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> reader</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> file.</span><span class="__shiki_2fxx5c">stream</span><span class="__shiki_1pf2xz">().</span><span class="__shiki_2fxx5c">getReader</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> decoder</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> TextDecoder</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> buffer </span><span class="__shiki_13ief6">=</span><span class="__shiki_50d5g0"> ''</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">while</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1r536h">done</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">value</span><span class="__shiki_1pf2xz"> } </span><span class="__shiki_13ief6">=</span><span class="__shiki_13ief6"> await</span><span class="__shiki_1pf2xz"> reader.</span><span class="__shiki_2fxx5c">read</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (done) </span><span class="__shiki_13ief6">break</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">buffer </span><span class="__shiki_13ief6">+=</span><span class="__shiki_1pf2xz"> decoder.</span><span class="__shiki_2fxx5c">decode</span><span class="__shiki_1pf2xz">(value, { stream: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> })</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> lines</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> buffer.</span><span class="__shiki_2fxx5c">split</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'</span><span class="__shiki_13ief6">\n</span><span class="__shiki_50d5g0">'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">buffer </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> lines.</span><span class="__shiki_2fxx5c">pop</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> line</span><span class="__shiki_13ief6"> of</span><span class="__shiki_1pf2xz"> lines) </span><span class="__shiki_13ief6">yield</span><span class="__shiki_1pf2xz"> line</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (buffer) </span><span class="__shiki_13ief6">yield</span><span class="__shiki_1pf2xz"> buffer</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 处理 CSV 而不加载整个文件</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> validRecords</span><span class="__shiki_13ief6"> =</span><span class="__shiki_13ief6"> await</span><span class="__shiki_2fxx5c"> readLines</span><span class="__shiki_1pf2xz">(csvFile)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">drop</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">)  </span><span class="__shiki_25oonp">// 跳过标题行</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">line</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> line.</span><span class="__shiki_2fxx5c">split</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">','</span><span class="__shiki_1pf2xz">))</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">cols</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> cols[</span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">] </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'active'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">100</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">()</span></span></code></pre>
+<h5 id="示例-数据管道处理csv解析与转换" tabindex="-1">示例：数据管道处理CSV解析与转换</h5>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 解析 CSV 行的生成器</span></span>
+<span class="line"><span class="__shiki_13ief6">function*</span><span class="__shiki_2fxx5c"> parseCSV</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">text</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> line</span><span class="__shiki_13ief6"> of</span><span class="__shiki_1pf2xz"> text.</span><span class="__shiki_2fxx5c">split</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'</span><span class="__shiki_13ief6">\n</span><span class="__shiki_50d5g0">'</span><span class="__shiki_1pf2xz">)) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (line.</span><span class="__shiki_2fxx5c">trim</span><span class="__shiki_1pf2xz">()) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">yield</span><span class="__shiki_1pf2xz"> line.</span><span class="__shiki_2fxx5c">split</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">','</span><span class="__shiki_1pf2xz">).</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">cell</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> cell.</span><span class="__shiki_2fxx5c">trim</span><span class="__shiki_1pf2xz">());</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> csvData</span><span class="__shiki_13ief6"> =</span><span class="__shiki_50d5g0"> `</span></span>
+<span class="line"><span class="__shiki_50d5g0">name,age,city</span></span>
+<span class="line"><span class="__shiki_50d5g0">Alice,30,NYC</span></span>
+<span class="line"><span class="__shiki_50d5g0">Bob,25,LA</span></span>
+<span class="line"><span class="__shiki_50d5g0">Carol,35,SF</span></span>
+<span class="line"><span class="__shiki_50d5g0">Dave,28,NYC</span></span>
+<span class="line"><span class="__shiki_50d5g0">`</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 提取所有 NYC 居民的姓名和年龄</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> nycResidents</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> Iterator.</span><span class="__shiki_2fxx5c">from</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_2fxx5c">parseCSV</span><span class="__shiki_1pf2xz">(csvData))</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">drop</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">)  </span><span class="__shiki_25oonp">// 跳过表头</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(([</span><span class="__shiki_1g8orr">name</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">age</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">city</span><span class="__shiki_1pf2xz">]) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> city </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'NYC'</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(([</span><span class="__shiki_1g8orr">name</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">age</span><span class="__shiki_1pf2xz">]) </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> ({ name, age: </span><span class="__shiki_2fxx5c">parseInt</span><span class="__shiki_1pf2xz">(age) }))</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="__shiki_25oonp">// → [{ name: 'Alice', age: 30 }, { name: 'Dave', age: 28 }]</span></span></code></pre>
+<h5 id="示例-处理无限序列" tabindex="-1">示例：处理无限序列</h5>
+<p>生成和处理无限数据流：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">function*</span><span class="__shiki_2fxx5c"> fibonacci</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> [a, b] </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">0</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">while</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">yield</span><span class="__shiki_1pf2xz"> a</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">;[a, b] </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> [b, a </span><span class="__shiki_13ief6">+</span><span class="__shiki_1pf2xz"> b]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 找到第一个大于 1000 的斐波那契数</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> firstLarge</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> fibonacci</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">find</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">n</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> n </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 1000</span><span class="__shiki_1pf2xz">)  </span><span class="__shiki_25oonp">// 1597</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 获取前 10 个偶数斐波那契数</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> evenFibs</span><span class="__shiki_13ief6"> =</span><span class="__shiki_2fxx5c"> fibonacci</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">n</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> n </span><span class="__shiki_13ief6">%</span><span class="__shiki_1r536h"> 2</span><span class="__shiki_13ief6"> ===</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">10</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">()</span></span></code></pre>
+<h4 id="常见陷阱" tabindex="-1">常见陷阱</h4>
+<h5 id="常见陷阱-迭代器是单次可用的" tabindex="-1">常见陷阱：迭代器是单次可用的</h5>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> iter</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">].</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">().</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">*</span><span class="__shiki_1r536h"> 2</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">([</span><span class="__shiki_13ief6">...</span><span class="__shiki_1pf2xz">iter])  </span><span class="__shiki_25oonp">// [2, 4, 6]</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">([</span><span class="__shiki_13ief6">...</span><span class="__shiki_1pf2xz">iter])  </span><span class="__shiki_25oonp">// [] - Already consumed!</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// Solution: Create a new iterator</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_2fxx5c"> makeIter</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> () </span><span class="__shiki_13ief6">=></span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">].</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">().</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">*</span><span class="__shiki_1r536h"> 2</span><span class="__shiki_1pf2xz">)</span></span></code></pre>
+<h5 id="常见陷阱-迭代器和数组方法混用" tabindex="-1">常见陷阱：迭代器和数组方法混用</h5>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// Won't work - filter returns iterator, not array</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 1</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">includes</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">)  </span><span class="__shiki_25oonp">// Error!</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// Solution: Convert back to array first</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 1</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">()</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">includes</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">)  </span><span class="__shiki_25oonp">// true</span></span></code></pre>
+<h2 id="迭代器辅助函数的原理" tabindex="-1">迭代器辅助函数的原理</h2>
+<p>迭代器辅助函数如何做到惰性求值？为什么链式调用不会立即执行？</p>
+<p>答案在于<strong>Generator 机制的复用</strong>。ECMAScript 规范将每个 iterator helper 都实现为一个 Generator ，利用 Generator 的暂停/恢复能力实现惰性执行。</p>
+<p>惰性求值具备如下特点：</p>
+<ul>
+<li>声明不执行：调用<code>map()/filter()/take()</code>等，仅返回新的迭代器，不遍历、不计算、不生成中间数组；</li>
+<li>消费才触发：仅在调用<code>toArray()/for...of/next()</code>等操作时，才从源头开始逐元素处理；</li>
+<li>按需逐元素：每次<code>next()</code>只处理一个元素，管道逐级传递，无需全量加载；</li>
+<li>提前终止：调用<code>take()</code>收集够n个有效元素后立即停止，后续元素不处理；</li>
+<li>拉取模型：数据由末端按需从上游逐个拉取；</li>
+</ul>
+<h3 id="与generator的关系" tabindex="-1">与Generator的关系</h3>
+<p>iterator helper 约等于受限的Generator：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 手写 Generator 实现 map</span></span>
+<span class="line"><span class="__shiki_13ief6">function*</span><span class="__shiki_2fxx5c"> manualMap</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">iterator</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">fn</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">for</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> value</span><span class="__shiki_13ief6"> of</span><span class="__shiki_1pf2xz"> iterator) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">yield</span><span class="__shiki_2fxx5c"> fn</span><span class="__shiki_1pf2xz">(value);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 等价于</span></span>
+<span class="line"><span class="__shiki_1pf2xz">iterator.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(fn);</span></span></code></pre>
+<p>但iterator helper有如下限制：</p>
+<ol>
+<li>不支持<code>.throw()</code>，helper不暴露<code>throw</code>方法，不能向管线中注入异常；</li>
+<li>不转发<code>.next()</code>的参数，<code>helper.next(someValue)</code>中的<code>someValue</code>参数会被忽略；</li>
+<li><code>.return()</code>会关闭底层迭代器，调用<code>helper.return()</code>会沿着链路关闭所有上游迭代器。</li>
+</ol>
+<p>即，iterator helper虽然底层是 Generator 机制，但对外只暴露纯粹的Iterator接口。</p>
+<h3 id="执行流程解析" tabindex="-1">执行流程解析</h3>
+<p>以以下代码为例：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 1. 声明阶段：惰性包装，不执行任何逻辑</span></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> iterator</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [</span><span class="__shiki_1r536h">1</span><span class="__shiki_1pf2xz">,</span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">,</span><span class="__shiki_1r536h">3</span><span class="__shiki_1pf2xz">,</span><span class="__shiki_1r536h">4</span><span class="__shiki_1pf2xz">,</span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">]</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">values</span><span class="__shiki_1pf2xz">() </span><span class="__shiki_25oonp">// 原始迭代器</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> 2</span><span class="__shiki_1pf2xz">) </span><span class="__shiki_25oonp">// 包装为 filterIter</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">x</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> x </span><span class="__shiki_13ief6">*</span><span class="__shiki_1r536h"> 2</span><span class="__shiki_1pf2xz">) </span><span class="__shiki_25oonp">// 包装为 mapIter</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">2</span><span class="__shiki_1pf2xz">); </span><span class="__shiki_25oonp">// 包装为 takeIter</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_25oonp">// 2. 消费阶段：才真正开始执行（唯一触发点）</span></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(Array.</span><span class="__shiki_2fxx5c">from</span><span class="__shiki_1pf2xz">(iterator)); </span><span class="__shiki_25oonp">// [6, 8]</span></span></code></pre>
+<p>执行的流程为：</p>
+<ul>
+<li>每个方法返回新迭代器，保存回调与上游迭代器引用</li>
+<li>消费执行阶段（Array.from() 触发），下游拉取 → 上游响应（take → map → filter → 源头）
+<ul>
+<li>请求第一个结果: 取 1 → 过滤失败 → 取 2 → 过滤失败 → 取 3 → 过滤通过 → 乘 2 → take 计数 1</li>
+<li>请求第二个结果: 取 4 → 过滤通过 → 乘 2 → take 计数 2</li>
+<li>终止: 直接停止，5 不会被读取和处理</li>
+</ul>
+</li>
+</ul>
+<h3 id="手写简化版" tabindex="-1">手写简化版</h3>
+<p>理解了规范算法后，用js实现一个简化版，加深对底层机制的理解：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">class</span><span class="__shiki_1g8orr"> LazyIterator</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1g8orr">#source</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">constructor</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">source</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// source 是一个 { next() } 对象</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1r536h">this</span><span class="__shiki_1pf2xz">.#source </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> source;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">.#source.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">.#source.</span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">?.() </span><span class="__shiki_13ief6">??</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// -- 惰性方法 --</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">mapper</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> source</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> counter </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> LazyIterator</span><span class="__shiki_1pf2xz">({</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1r536h">value</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">done</span><span class="__shiki_1pf2xz"> } </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> source.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (done) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_2fxx5c">mapper</span><span class="__shiki_1pf2xz">(value, counter</span><span class="__shiki_13ief6">++</span><span class="__shiki_1pf2xz">), done: </span><span class="__shiki_1r536h">false</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> source.</span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">?.() </span><span class="__shiki_13ief6">??</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">});</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">predicate</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> source</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> counter </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> LazyIterator</span><span class="__shiki_1pf2xz">({</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">while</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1r536h">value</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">done</span><span class="__shiki_1pf2xz"> } </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> source.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (done) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_2fxx5c">predicate</span><span class="__shiki_1pf2xz">(value, counter</span><span class="__shiki_13ief6">++</span><span class="__shiki_1pf2xz">)) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value, done: </span><span class="__shiki_1r536h">false</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 不满足条件，则继续拉取下一个，filter内部的循环</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> source.</span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">?.() </span><span class="__shiki_13ief6">??</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">});</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">limit</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (limit </span><span class="__shiki_13ief6">&#x3C;=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> LazyIterator</span><span class="__shiki_1pf2xz">({</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> }; },</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">() { </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> }; }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">});</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> source</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> remaining </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> limit;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> closed </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> false</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span><span class="indent" style="--indent-offset: 2ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> LazyIterator</span><span class="__shiki_1pf2xz">({</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">!</span><span class="__shiki_1pf2xz">closed </span><span class="__shiki_13ief6">&#x26;&#x26;</span><span class="__shiki_1pf2xz"> remaining </span><span class="__shiki_13ief6">&#x3C;=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 提前终止</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">source.</span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">?.();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">closed </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> true</span><span class="__shiki_1pf2xz">; </span><span class="__shiki_25oonp">// 防止重复关闭</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (remaining </span><span class="__shiki_13ief6">&#x3C;=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">remaining</span><span class="__shiki_13ief6">--</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> source.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">!</span><span class="__shiki_1pf2xz">closed) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">closed </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> true</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> source.</span><span class="__shiki_2fxx5c">return</span><span class="__shiki_1pf2xz">?.() </span><span class="__shiki_13ief6">??</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: </span><span class="__shiki_1r536h">undefined</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz"> };</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">},</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">});</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// -- 急切方法 --</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> [];</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">while</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">true</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">const</span><span class="__shiki_1pf2xz"> { </span><span class="__shiki_1r536h">value</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1r536h">done</span><span class="__shiki_1pf2xz"> } </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (done) </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> result;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">result.</span><span class="__shiki_2fxx5c">push</span><span class="__shiki_1pf2xz">(value);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// ...其他方法，实现类似，此处省略</span></span>
+<span class="line"><span class="indent" style="--indent-offset: 0ch;"></span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_25oonp">// 静态工厂方法</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">static</span><span class="__shiki_2fxx5c"> from</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">iteratorOrIterable</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (iteratorOrIterable </span><span class="__shiki_13ief6">==</span><span class="__shiki_1r536h"> null</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">throw</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> TypeError</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Cannot convert null or undefined to iterator'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 先检查是否已经是迭代器（有 .next() 方法）</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">typeof</span><span class="__shiki_1pf2xz"> iteratorOrIterable.next </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'function'</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> LazyIterator</span><span class="__shiki_1pf2xz">(iteratorOrIterable);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 再检查是否是可迭代对象（有 Symbol.iterator）</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (</span><span class="__shiki_13ief6">typeof</span><span class="__shiki_1pf2xz"> iteratorOrIterable[Symbol.iterator] </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'function'</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> LazyIterator</span><span class="__shiki_1pf2xz">(iteratorOrIterable[Symbol.iterator]());</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">throw</span><span class="__shiki_13ief6"> new</span><span class="__shiki_2fxx5c"> TypeError</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_50d5g0">'Argument must be an iterator or iterable object'</span><span class="__shiki_1pf2xz">);</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p>验证：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_13ief6">function</span><span class="__shiki_2fxx5c"> naturals</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">[Symbol.iterator]() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">let</span><span class="__shiki_1pf2xz"> n </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 1</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_2fxx5c">next</span><span class="__shiki_1pf2xz">() {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz"> { value: n</span><span class="__shiki_13ief6">++</span><span class="__shiki_1pf2xz">, done: </span><span class="__shiki_1r536h">false</span><span class="__shiki_1pf2xz"> }</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_13ief6">const</span><span class="__shiki_1r536h"> result</span><span class="__shiki_13ief6"> =</span><span class="__shiki_1pf2xz"> LazyIterator.</span><span class="__shiki_2fxx5c">from</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_2fxx5c">naturals</span><span class="__shiki_1pf2xz">())</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">filter</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">n</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> n </span><span class="__shiki_13ief6">%</span><span class="__shiki_1r536h"> 2</span><span class="__shiki_13ief6"> ===</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">map</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">n</span><span class="__shiki_13ief6"> =></span><span class="__shiki_1pf2xz"> n </span><span class="__shiki_13ief6">*</span><span class="__shiki_1r536h"> 10</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">take</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1r536h">5</span><span class="__shiki_1pf2xz">)</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">toArray</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_1pf2xz">console.</span><span class="__shiki_2fxx5c">log</span><span class="__shiki_1pf2xz">(result);</span></span>
+<span class="line"><span class="__shiki_25oonp">// → [20, 40, 60, 80, 100]</span></span></code></pre>
+<h2 id="参考资料" tabindex="-1">参考资料</h2>
+<p>参考以下链接：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/139960063">第七版 JavaScript权威指南之Iterators和Generators</a></li>
+<li><a href="https://www.javascripttutorial.net/javascript-iterator/">The Essential Guide to JavaScript Iterators</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols">MDN-迭代协议</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Iterator">MDN-Iterator</a></li>
+<li><a href="https://github.com/zloirock/core-js#iterator-helpers">core-js#iterator-helpers</a></li>
+<li><a href="https://nonfan.github.io/javascript-docs/iterator-and-generator/">迭代器与生成器</a></li>
+<li><a href="https://web.developers.google.cn/blog/baseline-iterator-helpers?hl=zh-cn">webdev-迭代器帮助程序已成为基准版</a></li>
+<li><a href="https://blog.openreplay.com/getting-started-javascript-iterator-helpers/">Getting Started with JavaScript Iterator Helpers</a></li>
+<li><a href="https://segmentfault.com/a/1190000047682096">深入 JavaScript Iterator Helpers：从 API 到引擎实现</a></li>
+</ul>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">JS中的Iteration迭代</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="https://wiskewu.github.io/posts/js中的iteration迭代/" class="q6DmLG_infoCardLink">https://wiskewu.github.io/posts/js中的iteration迭代/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/4/24 14:12:11</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></div><aside class="QvVcXW_tocAside"><nav aria-label="目录"><div class="QvVcXW_tocTitle">目录</div><ul class="QvVcXW_tocList"><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#前言">前言</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#迭代协议">迭代协议</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#可迭代协议">可迭代协议</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#迭代器协议">迭代器协议</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#interatorresult接口">InteratorResult接口</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#可迭代迭代器">可迭代迭代器</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#迭代器">迭代器</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#检查是否可迭代">检查是否可迭代</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#支持迭代器的原生语言">支持迭代器的原生语言</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#让类成为迭代器">让类成为迭代器</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#函数返回可迭代">函数返回可迭代</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#示例-map函数">示例：map函数</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#示例-filter函数">示例：filter函数</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#提前终止迭代器">提前终止迭代器</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#不可终止的迭代器">不可终止的迭代器</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#无限迭代器">无限迭代器</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#内置的js迭代器">内置的JS迭代器</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#使用迭代器作为可迭代对象">使用迭代器作为可迭代对象</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#迭代器辅助函数">迭代器辅助函数</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#惰性求值">惰性求值</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#性能与内存">性能与内存</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#浏览器支持">浏览器支持</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#示例">示例</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#示例-dom操作的函数式改写">示例：DOM操作的函数式改写</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#示例-map-set的链式操作">示例：Map/Set的链式操作</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#示例-与flatmap的组合">示例：与flatMap的组合</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#示例-api分页">示例：API分页</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#示例-文件流处理">示例：文件流处理</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#示例-数据管道处理csv解析与转换">示例：数据管道处理CSV解析与转换</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#示例-处理无限序列">示例：处理无限序列</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#常见陷阱">常见陷阱</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#常见陷阱-迭代器是单次可用的">常见陷阱：迭代器是单次可用的</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="5"><a class="QvVcXW_tocLink" href="#常见陷阱-迭代器和数组方法混用">常见陷阱：迭代器和数组方法混用</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#迭代器辅助函数的原理">迭代器辅助函数的原理</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#与generator的关系">与Generator的关系</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#执行流程解析">执行流程解析</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#手写简化版">手写简化版</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#参考资料">参考资料</a></li></ul></nav></aside><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div></main><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/notenoteblog/links/">链接</a><a href="/notenoteblog/feed.xml">RSS</a></div></div></footer></div><script src="https://wiskewu.github.io/notenoteblog/assets/js/client.62da5cb0.js"></script></body></html>
