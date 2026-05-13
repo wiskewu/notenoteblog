@@ -5,7 +5,21 @@
   <link href="til/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-04-30T05:29:42.126Z</updated>
+  <updated>2026-05-13T09:42:21.473Z</updated>
+  <entry>
+    <title>TIL 2026/5/11 13:09:28</title>
+    <link href="/til/本地静态文件服务器/" />
+    <id>/til/本地静态文件服务器/</id>
+    <updated>2026/5/11 13:09:28T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;本地静态文件服务器&quot; tabindex=&quot;-1&quot;&gt;本地静态文件服务器&lt;/h2&gt;
+&lt;p&gt;工作时，经常对文件进行代理服务，此时通常需要在本地启动一个临时网络服务器。针对这个需求，找到了两款轻量的应用程序：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/TheWaWaR/simple-http-server&quot;&gt;simple-http-server&lt;/a&gt;: 简单的静态文件服务器，具有目录列表、上传、基本身份验证、范围请求、压缩、CORS、SPA 回退和可选的 PKCS#12 HTTPS 支持（注：https需要额外配置，可以考虑直接使用下面的 &lt;code&gt;simplehttp2server&lt;/code&gt; 程序）。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/GoogleChromeLabs/simplehttp2server&quot;&gt;simplehttp2server&lt;/a&gt;: simplehttp2server 服务支持 HTTP/2.0，默认配置一个本地信任的SSL证书，仅供开发用途。simplehttp2server 采用 JSON 配置，允许你以轻量级 JSON 格式配置头部、重定向和 URL 重写。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在我实际开发过程中，这两个一般会配合&lt;a href=&quot;https://github.com/annnhan/ReRes&quot;&gt;ReRes&lt;/a&gt;扩展程序使用。将远程js代理至本地开发环境的js，通过修改本地文件进行调试和开发。&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>TIL 2026/4/29 15:42:47</title>
     <link href="/til/vue-data-ui/" />
@@ -132,21 +146,6 @@
 &lt;blockquote&gt;
 &lt;p&gt;---摘自&lt;a href=&quot;https://windliang.wang/2026/03/31/%E6%9D%80%E6%AD%BB%E9%82%A3%E4%B8%AA%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E4%BA%BA&quot;&gt;杀死那个写代码的人&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-</content>
-  </entry>
-  <entry>
-    <title>TIL 2026/4/10 10:53:51</title>
-    <link href="/til/命令提示符快速查看系统内存使用情况/" />
-    <id>/til/命令提示符快速查看系统内存使用情况/</id>
-    <updated>2026/4/10 10:53:51T00:00:00+08:00</updated>
-    <content type="html">&lt;h1 id=&quot;命令提示符快速查看系统内存使用情况&quot; tabindex=&quot;-1&quot;&gt;命令提示符快速查看系统内存使用情况&lt;/h1&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cmd&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;systeminfo | findstr /i /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;物理内存总量&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;可用的物理内存&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;虚拟内存: 最大值&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;虚拟内存: 可用&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; /c:&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;虚拟内存: 使用中&quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;输出如下：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;物理内存总量:     32,455 MB&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;可用的物理内存:   15,409 MB&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;虚拟内存: 最大值: 62,151 MB&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;虚拟内存: 可用:   35,950 MB&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;虚拟内存: 使用中: 26,201 MB&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 </content>
   </entry>
 </feed>
