@@ -1,0 +1,362 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>Canvas2D文本内存泄漏问题记录 - Adiós</title><link href="https://wiskewu.github.io/notenoteblog/favicon.ico" rel="icon" /><link title="RSS" href="https://wiskewu.github.io/notenoteblog/feed.xml" type="application/atom+xml" rel="alternate" /><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="https://wiskewu.github.io/notenoteblog/assets/css/style.4572f53b.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="_1BqNCq_layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/notenoteblog/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/notenoteblog/">首页</a><a href="/notenoteblog/til/">TIL</a><a href="/notenoteblog/archives/">归档</a><a href="/notenoteblog/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><main class="QvVcXW_articleLayout"><div class="QvVcXW_articleContainer"><div class="QvVcXW_articleHeader"><h1 class="QvVcXW_articleTitle">Canvas2D文本内存泄漏问题记录</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/5/26 19:55:33</time></span><span class="q6DmLG_metaItem">23 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/notenoteblog/tags/#Javascript/">Javascript</a><a class="q6DmLG_tag" href="/notenoteblog/tags/#Performance/">Performance</a></div></div></div><div class="yRPMta_markdownContent"><p>在使用<a href="https://github.com/paperjs/paper.js"><code>paperjs</code></a>过程中，遇到了一个棘手的内存泄漏问题，在此记录一下问题现象和排查记录。</p>
+<h2 id="背景" tabindex="-1">背景</h2>
+<p>基于<code>paperjs</code>封装了一个绘制库<code>PainterLib</code>，编写一个组件<code>CanvasChart</code>，在这个组件中使用<code>PainterLib</code>渲染流程图。</p>
+<p>然后在一个页面中，渲染一个<code>CanvasChart</code>组件A，和一个弹出式的<code>CanvasChart</code>组件B。</p>
+<p>组件A渲染一副流程图存档，存档规模为：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>存档大小</td>
+<td>1920x1080</td>
+</tr>
+<tr>
+<td>画面缩放</td>
+<td>根据容器自适应，保持宽高比</td>
+</tr>
+<tr>
+<td>画面规模</td>
+<td>1000个组合图元，每个组合图元包含一个文本图元和一个圆形；画面中另有一个矩形，使其<code>16ms</code>触发画面更新（比如可视动态，或编写脚本定时器触发）</td>
+</tr>
+</tbody>
+</table>
+<p>组件B渲染一副流程图，存档规模为：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>存档大小</td>
+<td>400x600</td>
+</tr>
+<tr>
+<td>画面规模</td>
+<td>无需特殊说明，可随意绘制若干个不同类型的图元</td>
+</tr>
+</tbody>
+</table>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p>组件A的画面表现为每16ms进行一次全量绘制，画面中除了矩形每帧切换显隐之外，其他图元属性均未变化。</p>
+</div>
+<h3 id="测试场景" tabindex="-1">测试场景</h3>
+<p>打开组件A，静置。</p>
+<p>组件B通过第三方点击工具进行自动化操作弹出，脚本的周期为：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-txt"><span class="line"><span class="__shiki_wvjl67">弹出组件B -> 等待1000ms -> 关闭组件B -> 等待1000ms</span></span>
+<span class="line"><span class="__shiki_wvjl67">继续上述循环</span></span></code></pre>
+<h2 id="现象" tabindex="-1">现象</h2>
+<p>基于上述场景演化（实际业务场景），运行<code>1H</code>。</p>
+<p>第三方性能计数器工具记录数据如下（仅做演示）：</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/canvas2d-context-memory-leak--00.png" alt="内存记录" tabindex="0" loading="lazy"><figcaption>内存记录</figcaption></figure>
+<p>可以看到，<code>CommitSize</code>（提交内存）和<code>WorkingSet</code>（工作内存）阶梯式突变。</p>
+<p>通过<code>chrome://tracing</code>记录数据如下：</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/canvas2d-context-memory-leak--01.png" alt="Tracing-1" tabindex="0" loading="lazy"><figcaption>Tracing-1</figcaption></figure>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/canvas2d-context-memory-leak--02.png" alt="Tracing-2" tabindex="0" loading="lazy"><figcaption>Tracing-2</figcaption></figure>
+<p>可以看到，<code>pooled_size</code>和<code>committed_size</code>均已达到3G，而<code>v8</code>内存仅有600M左右。</p>
+<h2 id="分析" tabindex="-1">分析</h2>
+<h3 id="根因" tabindex="-1">根因</h3>
+<p>采用控制变量的形式，修改源码进行以下测试（每行为一个单独的修改用例，无关联关系）：</p>
+<table>
+<thead>
+<tr>
+<th>修改内容</th>
+<th>修改细节</th>
+<th>是否存在内存泄漏</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基于 paperjs 简化PainterLib库</td>
+<td>--</td>
+<td>是</td>
+</tr>
+<tr>
+<td>基于 zrender 简化PainterLib库</td>
+<td>启用脏区重绘</td>
+<td>否</td>
+</tr>
+<tr>
+<td>基于 zrender 简化PainterLib库</td>
+<td>未启用脏区重绘</td>
+<td>否</td>
+</tr>
+<tr>
+<td>基于原生 canvasAPI 简化PainterLib库</td>
+<td>绘制逻辑参考paperjs</td>
+<td>是</td>
+</tr>
+<tr>
+<td>基于原生 canvasAPI 简化PainterLib库</td>
+<td>绘制逻辑参考paperjs，将文本逻辑逻辑更改为绘制线条</td>
+<td>否</td>
+</tr>
+<tr>
+<td>基于原生 canvasAPI 简化PainterLib库</td>
+<td>每帧只调用一次ctx.save+ctx.restore函数</td>
+<td>否</td>
+</tr>
+<tr>
+<td>修改paperjs源码</td>
+<td>文本图元绘制时跳过ctx.save和ctx.restore调用</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<p>基于以上用例，分析得出：</p>
+<ul>
+<li>paperjs 全量绘制模式下，每帧调用 <code>ctx.save</code>+<code>ctx.fillText</code>+<code>ctx.restore</code>，在高压绘制情况下（比如每帧16000次调用，每次调用这三个函数），会产生内存泄漏问题；</li>
+<li>在每帧绘制前调用<code>ctx.reset</code>，无法解决上述场景的内存泄漏问题；</li>
+<li>使用原生 canvasAPI 参考 paperjs 全量绘制模式，每帧调用 <code>ctx.save</code>+<code>ctx.fillText</code>+<code>ctx.restore</code>，也会出现内存泄漏问题；</li>
+<li>zrender 全量绘制或者脏区局部绘制，均未观测到内存泄漏问题；</li>
+<li>使用原生 canvasAPI 参考 zrender 全量绘制模式，每帧调用一次 <code>ctx.save</code>+<code>ctx.fillText</code>+<code>ctx.restore</code>，未观测到内存泄漏问题；</li>
+<li>修改paperjs源码，在绘制文本前后跳过<code>ctx.save</code>+<code>ctx.restore</code>，未观测到内存泄漏问题。</li>
+</ul>
+<p>综上，找到泄漏的原因是: <code>ctx.save()</code> + <code>ctx.fillText()</code> + <code>ctx.restore()</code>这三个API组合使用且高频绘制时，就会出现内存泄漏问题。</p>
+<p><code>paperjs</code>对于上述场景图元层级如下:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-txt"><span class="line"><span class="__shiki_wvjl67">Project</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_wvjl67">Layer</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">Group</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">PointText</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">Shape(type='circle')</span></span></code></pre>
+<p>其绘制逻辑如下:</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-txt"><span class="line"><span class="__shiki_wvjl67">CavasView.update()</span></span>
+<span class="line"><span class="__shiki_wvjl67">└── Project.draw()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">├── ctx.save()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">├── children[i].draw() (即Layer.draw，由于Layer extends Group extends Item，实际调用Item.draw)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   ├── ctx.save()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   ├── this._draw() (实际调用Group._draw)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   ├── children[i].draw() (即Group.draw，由于Group extends Item，实际调用Item.draw)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   ├── ctx.save()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   ├── this._draw() (即Group._draw)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │   └── children[i].draw()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │       ├── i=0</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │       │   ├── ctx.save()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │       │   ├── this._draw() (即PointText._draw)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │       │   │   └── ctx.fillText()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │       │   └── ctx.restore()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │       └── i=1</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │           ├── ctx.save()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │           ├── this._draw() (即Shape._draw)</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   │           └── ctx.restore()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   │   │   └── ctx.restore()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">│   └── ctx.restore()</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">└── ctx.restore()</span></span></code></pre>
+<p>几个关键函数的源码为：</p>
+<ol>
+<li><a href="https://github.com/paperjs/paper.js/blob/92775f5279c05fb7f0a743e9e7fa02cd40ec1e70/src/view/CanvasView.js#L136-L147">CanvasView.update</a></li>
+<li><a href="https://github.com/paperjs/paper.js/blob/92775f5279c05fb7f0a743e9e7fa02cd40ec1e70/src/item/Project.js#L865-L900">Project.draw</a></li>
+<li><a href="https://github.com/paperjs/paper.js/blob/92775f5279c05fb7f0a743e9e7fa02cd40ec1e70/src/item/Group.js#L187-L205">Group._draw</a></li>
+<li><a href="https://github.com/paperjs/paper.js/blob/92775f5279c05fb7f0a743e9e7fa02cd40ec1e70/src/item/Item.js#L4393-L4535">Item.draw</a></li>
+<li><a href="https://github.com/paperjs/paper.js/blob/92775f5279c05fb7f0a743e9e7fa02cd40ec1e70/src/text/PointText.js#L79-L103">PointText._draw</a></li>
+</ol>
+<h3 id="对照" tabindex="-1">对照</h3>
+<p>对照<a href="https://github.com/ecomfe/zrender">zrender</a>的<a href="https://github.com/ecomfe/zrender/blob/349111033fba0fa08cee745b72dd2ea66dc6fcaa/src/canvas/Painter.ts#L610-L613">全量绘制</a>源码：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="indent"> </span><span class="__shiki_25oonp">// Paint all once</span></span>
+<span class="line"><span class="__shiki_1pf2xz">ctx.</span><span class="__shiki_2fxx5c">save</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="__shiki_1r536h">this</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">_paintPerCursorInRect</span><span class="__shiki_1pf2xz">(layer, layerCursor, list, </span><span class="__shiki_1r536h">null</span><span class="__shiki_1pf2xz">, contentRetained);</span></span>
+<span class="line"><span class="__shiki_1pf2xz">ctx.</span><span class="__shiki_2fxx5c">restore</span><span class="__shiki_1pf2xz">();</span></span></code></pre>
+<p>zrender 采用的是自己管理每个图元上下文状态，在一次全量绘制中只调用一次<code>ctx.save</code>和<code>ctx.restore</code>，相比于paperjs，每帧减少了大量的<code>ctx.save</code>和<code>ctx.restore</code>调用。</p>
+<p>尝试将上述场景的底层渲染绘制库更换成 zrender，测试后未发现虚拟内存泄漏的场景，且占用内存更低。</p>
+<h2 id="其他说明" tabindex="-1">其他说明</h2>
+<p>尝试修改 paperjs - Item.draw 源码，对文本图元的绘制采用手动管理文本上下文状态的方式：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_1pf2xz"># Item.draw</span></span>
+<span class="line"><span class="__shiki_1g8orr">draw</span><span class="__shiki_1pf2xz">: </span><span class="__shiki_13ief6">function</span><span class="__shiki_1pf2xz">(</span><span class="__shiki_1g8orr">ctx</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">param</span><span class="__shiki_1pf2xz">, </span><span class="__shiki_1g8orr">parentStrokeMatrix</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 省略原有逻辑</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> skipSaveRestore </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> direct </span><span class="__shiki_13ief6">&#x26;&#x26;</span><span class="__shiki_1r536h"> this</span><span class="__shiki_1pf2xz">._class </span><span class="__shiki_13ief6">===</span><span class="__shiki_50d5g0"> 'PointText'</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">&#x26;&#x26;</span><span class="__shiki_1pf2xz"> normalBlend </span><span class="__shiki_13ief6">&#x26;&#x26;</span><span class="__shiki_1pf2xz"> opacity </span><span class="__shiki_13ief6">===</span><span class="__shiki_1r536h"> 1</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">&#x26;&#x26;</span><span class="__shiki_13ief6"> !</span><span class="__shiki_1pf2xz">param.clip;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (skipSaveRestore) {</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevTransform </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.</span><span class="__shiki_2fxx5c">getTransform</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevFillStyle </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.fillStyle;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevStrokeStyle </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.strokeStyle;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevLineWidth </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.lineWidth;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevLineJoin </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.lineJoin;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevLineCap </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.lineCap;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevMiterLimit </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.miterLimit;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevFont </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.font;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevTextAlign </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.textAlign;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevShadowColor </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.shadowColor;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevShadowBlur </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.shadowBlur;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevShadowOffsetX </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.shadowOffsetX;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevShadowOffsetY </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.shadowOffsetY;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevLineDash </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.</span><span class="__shiki_2fxx5c">getLineDash</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">var</span><span class="__shiki_1pf2xz"> prevLineDashOffset </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> ctx.lineDashOffset;</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">matrix.</span><span class="__shiki_2fxx5c">applyToContext</span><span class="__shiki_1pf2xz">(ctx);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1r536h">this</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">_draw</span><span class="__shiki_1pf2xz">(ctx, param, viewMatrix);</span></span>
+<span class="line"><span class="indent"> </span><span class="__shiki_1pf2xz"></span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.</span><span class="__shiki_2fxx5c">setTransform</span><span class="__shiki_1pf2xz">(prevTransform);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.fillStyle </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevFillStyle;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.strokeStyle </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevStrokeStyle;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.lineWidth </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevLineWidth;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.lineJoin </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevLineJoin;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.lineCap </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevLineCap;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.miterLimit </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevMiterLimit;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.font </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevFont;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.textAlign </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevTextAlign;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.shadowColor </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevShadowColor;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.shadowBlur </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevShadowBlur;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.shadowOffsetX </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevShadowOffsetX;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.shadowOffsetY </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevShadowOffsetY;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.</span><span class="__shiki_2fxx5c">setLineDash</span><span class="__shiki_1pf2xz">(prevLineDash);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.lineDashOffset </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> prevLineDashOffset;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 沿用旧逻辑，恢复到父级矩阵状态参数</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">matrices.</span><span class="__shiki_2fxx5c">pop</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="indent">  </span><span class="__shiki_13ief6">return</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">}</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// 原有逻辑</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.</span><span class="__shiki_2fxx5c">save</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_25oonp">// ...</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1r536h">this</span><span class="__shiki_1pf2xz">.</span><span class="__shiki_2fxx5c">_draw</span><span class="__shiki_1pf2xz">(ctx, param, viewMatrix, strokeMatrix);</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_1pf2xz">ctx.</span><span class="__shiki_2fxx5c">restore</span><span class="__shiki_1pf2xz">();</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<p>其中，部分状态未纳入管理范围，未管理的状态有：</p>
+<ul>
+<li>clip裁剪区域：需通过save和restore；</li>
+<li>globalAlpha：opacity=1，无需设置。前一个图元如果设置了透明度，也会自动restore恢复；</li>
+<li>globalCompositeOperation，无需设置。前一个图元如果设置了合成模式，也会自动restore恢复;</li>
+<li>textBaseline：绘制文本未涉及;</li>
+<li>direction：绘制文本未涉及;</li>
+<li>imageSmoothingEnabled：绘制文本未涉及;</li>
+</ul>
+<p>这种方式下，若画面中所有文本都是挂载在Layer下，则内存泄漏问题得以控制，但不符合实际使用场景。
+实际使用场景必然存在文本与其他图元组合的情况，这种情况下，手动管理文本上下文状态无法避免 <code>Group.draw()</code> 本身调用<code>ctx.save</code>和<code>ctx.restore</code>函数，结合文本图元的<code>ctx.fillText</code>，依然会出现内存泄漏。</p>
+<h3 id="手动管理状态的实现细节" tabindex="-1">手动管理状态的实现细节</h3>
+<p>根据<a href="https://mdn.org.cn/en-US/docs/Web/API/CanvasRenderingContext2D/save">CanvasRenderingContext2D：save() 方法</a>描述，保存到栈中的绘制状态状态由以下部分组成：</p>
+<ul>
+<li>当前的变换矩阵；</li>
+<li>当前的剪切区域；</li>
+<li>当前的虚线列表；</li>
+<li>以下属性当前的值：strokeStyle、fillStyle、globalAlpha、lineWidth、lineCap、lineJoin、miterLimit、lineDashOffset、shadowOffsetX、shadowOffsetY、shadowBlur、shadowColor、globalCompositeOperation、font、textAlign、textBaseline、direction、imageSmoothingEnabled</li>
+</ul>
+<p>可以按照下列方式进行划分：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>受影响的属性/状态</th>
+<th>作用描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>变换（Transformations）</td>
+<td>变换矩阵（Transformation Matrix）</td>
+<td>由translate()、rotate()、scale()、transform()、setTransform()产生的当前画面坐标系的位移、旋转和缩放状态。</td>
+</tr>
+<tr>
+<td>裁剪（Clipping）</td>
+<td>裁剪区域（Clipping Region）</td>
+<td>由clip()方法创建的当前裁剪范围。恢复状态可以取消当前的裁剪限制。</td>
+</tr>
+<tr>
+<td>虚线列表</td>
+<td>/</td>
+<td>由setLineDash()设置的虚线列表样式。可以通过getLineDash()获取当前的虚线列表。</td>
+</tr>
+<tr>
+<td>颜色与样式</td>
+<td>fillStyle</td>
+<td>当前用于填充的颜色、渐变或图案。</td>
+</tr>
+<tr>
+<td>颜色与样式</td>
+<td>strokeStyle</td>
+<td>当前用于描边的颜色、渐变或图案。</td>
+</tr>
+<tr>
+<td>全局显示配置</td>
+<td>globalAlpha</td>
+<td>全局透明度。</td>
+</tr>
+<tr>
+<td>全局显示配置</td>
+<td>globalCompositeOperation</td>
+<td>全局合成操作（新旧图形的混合模式，如 source-over 等）。</td>
+</tr>
+<tr>
+<td>线条配置</td>
+<td>lineWidth</td>
+<td>线条宽度。</td>
+</tr>
+<tr>
+<td>线条配置</td>
+<td>lineCap</td>
+<td>线条端点样式（butt, round, square）。</td>
+</tr>
+<tr>
+<td>线条配置</td>
+<td>lineJoin</td>
+<td>线条交汇处样式（round, bevel, miter）。</td>
+</tr>
+<tr>
+<td>线条配置</td>
+<td>miterLimit</td>
+<td>斜接限制。</td>
+</tr>
+<tr>
+<td>线条配置</td>
+<td>lineDashOffset</td>
+<td>虚线偏移量（注：setLineDash() 设置的虚线模式在某些旧浏览器中不被保存，但在现代标准中已纳入）</td>
+</tr>
+<tr>
+<td>阴影配置</td>
+<td>shadowBlur</td>
+<td>阴影的模糊级别。</td>
+</tr>
+<tr>
+<td>阴影配置</td>
+<td>shadowColor</td>
+<td>阴影颜色。</td>
+</tr>
+<tr>
+<td>阴影配置</td>
+<td>shadowOffsetX</td>
+<td>阴影水平偏移量。</td>
+</tr>
+<tr>
+<td>阴影配置</td>
+<td>shadowOffsetY</td>
+<td>阴影垂直偏移量。</td>
+</tr>
+<tr>
+<td>文本配置</td>
+<td>font</td>
+<td>字体设置（大小、行高、字体族等）。</td>
+</tr>
+<tr>
+<td>文本配置</td>
+<td>textAlign</td>
+<td>文本水平对齐方式。</td>
+</tr>
+<tr>
+<td>文本配置</td>
+<td>textBaseline</td>
+<td>文本垂直基线对齐方式。</td>
+</tr>
+<tr>
+<td>文本配置</td>
+<td>direction</td>
+<td>文本排版方向（如 ltr, rtl）。</td>
+</tr>
+<tr>
+<td>图像平滑</td>
+<td>imageSmoothingEnabled</td>
+<td>图像缩放时的平滑处理开关（抗锯齿）。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="后话" tabindex="-1">后话</h2>
+<p>在<a href="https://issues.chromium.org/issues?q=status:open">Chromium Issues</a>并未找到相关的缺陷记录，此篇文章仅做记录和跟踪。</p>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">Canvas2D文本内存泄漏问题记录</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="https://wiskewu.github.io/posts/canvas2d文本内存泄漏问题记录/" class="q6DmLG_infoCardLink">https://wiskewu.github.io/posts/canvas2d文本内存泄漏问题记录/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/5/26 19:55:33</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></div><aside class="QvVcXW_tocAside"><nav aria-label="目录"><div class="QvVcXW_tocTitle">目录</div><ul class="QvVcXW_tocList"><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#背景">背景</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#测试场景">测试场景</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#现象">现象</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#分析">分析</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#根因">根因</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#对照">对照</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#其他说明">其他说明</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#手动管理状态的实现细节">手动管理状态的实现细节</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#后话">后话</a></li></ul></nav></aside><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div></main><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/notenoteblog/links/">链接</a><a href="/notenoteblog/feed.xml">RSS</a></div></div></footer></div><script src="https://wiskewu.github.io/notenoteblog/assets/js/client.62da5cb0.js"></script></body></html>
