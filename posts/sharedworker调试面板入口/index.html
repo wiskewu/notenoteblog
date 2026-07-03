@@ -1,0 +1,81 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>SharedWorker调试面板入口 - Adiós</title><link href="https://wiskewu.github.io/notenoteblog/favicon.ico" rel="icon" /><link title="RSS" href="https://wiskewu.github.io/notenoteblog/feed.xml" type="application/atom+xml" rel="alternate" /><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="https://wiskewu.github.io/notenoteblog/assets/css/style.4572f53b.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="_1BqNCq_layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/notenoteblog/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/notenoteblog/">首页</a><a href="/notenoteblog/til/">TIL</a><a href="/notenoteblog/archives/">归档</a><a href="/notenoteblog/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><main class="QvVcXW_articleLayout"><div class="QvVcXW_articleContainer"><div class="QvVcXW_articleHeader"><h1 class="QvVcXW_articleTitle">SharedWorker调试面板入口</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/7/3 10:53:32</time></span><span class="q6DmLG_metaItem">6 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/notenoteblog/tags/#Browser/">Browser</a><a class="q6DmLG_tag" href="/notenoteblog/tags/#devtools/">devtools</a></div></div></div><div class="yRPMta_markdownContent"><p><code>SharedWorker</code>运行在专门的Worker进程，是浏览器单独Worker进程里的一条独立JS线程，和页面进程完全隔离，不和页面Tab渲染进程同进程。</p>
+<p>也就是说，在当前页面打开<strong>开发者工具</strong>是无法调试worker代码的。</p>
+<h2 id="解决办法" tabindex="-1">解决办法</h2>
+<p>访问<a href="chrome://inspect#worker">chrome://inspect#worker</a>，在这个页面可以看到所有标签页当前活动的worker实例。</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/sharedworker-debug-entry--00.png" alt="inspect页面" tabindex="0" loading="lazy"><figcaption>inspect页面</figcaption></figure>
+<p>有两个功能：</p>
+<h3 id="inspect" tabindex="-1">inspect</h3>
+<p>点击某个worker下方的<code>inspect</code>，即可打开新的开发者工具窗口调试worker代码：</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/sharedworker-debug-entry--01.png" alt="inspect" tabindex="0" loading="lazy"><figcaption>inspect</figcaption></figure>
+<p>可以看到，worker是没有【元素】审查的面板的。
+除此之外，worker开发者工具窗口还具备以下工具:</p>
+<figure><img src="https://wiskewu.github.io/notenoteblog/assets/images/sharedworker-debug-entry--02.png" alt="更多工具" tabindex="0" loading="lazy"><figcaption>更多工具</figcaption></figure>
+<h3 id="terminate" tabindex="-1">terminate</h3>
+<p>点击某个worker下方的<code>terminate</code>，即可终止这个worker所在的进程。</p>
+<h2 id="扩展知识" tabindex="-1">扩展知识</h2>
+<h3 id="关于进程" tabindex="-1">关于进程</h3>
+<p>进程（Process）是操作系统级别资源隔离单元，有独立内存、PID、CPU 调度单元，互不共享堆内存。</p>
+<p>浏览器主页面、Tab、插件、GPU、网络、渲染、Worker 进程 都是独立进程。</p>
+<h3 id="关于线程" tabindex="-1">关于线程</h3>
+<p>线程（Thread）是同一进程内的轻量执行单元，共享进程堆内存，由内核分时调度。</p>
+<p>JS 执行是单线程，每个 Worker 内部只有一条 JS 主线程。</p>
+<h3 id="sharedworker特性" tabindex="-1">SharedWorker特性</h3>
+<p>SharedWorker 归属于独立进程+内部单 JS 线程。</p>
+<ol>
+<li>普通 DedicatedWorker、SharedWorker、ServiceWorker 统一运行在专门的 Worker 进程，不和页面 Tab 渲染进程同进程；</li>
+<li>多个页面创建<strong>同源 SharedWorker</strong>，会<strong>复用</strong>同一个 Worker 进程实例；</li>
+<li>不同源 SharedWorker 会新建独立 Worker 进程；</li>
+<li>Tab 页面关闭，SharedWorker 进程不会立刻销毁，继续存活供其他同源页面复用。</li>
+</ol>
+<p>不管 SharedWorker 被多少页面连接，它内部永远只有单个 JS 执行线程：</p>
+<ol>
+<li>self.connect、port.onmessage、定时器、fetch 全部排队串行执行；</li>
+<li>无法并发跑 JS 逻辑，阻塞一段逻辑就会卡住所有页面的消息处理；</li>
+<li>如需多线程并行，只能在 SharedWorker 内部再 new DedicatedWorker。</li>
+</ol>
+<h3 id="与其他worker对比" tabindex="-1">与其他Worker对比</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>进程归属</th>
+<th>JS 线程数</th>
+<th>多页面共享</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>页面主线程</td>
+<td>Tab 渲染进程</td>
+<td>1</td>
+<td>不共享</td>
+</tr>
+<tr>
+<td>DedicatedWorker</td>
+<td>Worker 独立进程</td>
+<td>1</td>
+<td>仅创建它的页面可用</td>
+</tr>
+<tr>
+<td>SharedWorker</td>
+<td>Worker 独立进程</td>
+<td>1</td>
+<td>同源多页面共享同一个实例</td>
+</tr>
+<tr>
+<td>ServiceWorker</td>
+<td>Worker 独立进程</td>
+<td>1</td>
+<td>同源全局共享，后台常驻</td>
+</tr>
+</tbody>
+</table>
+<h3 id="细节补充" tabindex="-1">细节补充</h3>
+<p>关于同源复用：</p>
+<p>同协议 + 同域名 + 同 SharedWorker 脚本路径 → 共用同一个进程内的 SharedWorker 实例；不同源直接新开进程。</p>
+<p>关于内存隔离：</p>
+<p>SharedWorker 进程与 Tab 渲染进程内存完全隔离，只能通过 postMessage / MessageChannel 结构化克隆 / Transfer 传数据，不能直接共享变量。</p>
+<p>关于生命周期：</p>
+<p>所有打开它的 Tab 全部关闭后，浏览器才会延迟回收该 SharedWorker 进程；只要还有一个页面持有，进程持续存活。</p>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">SharedWorker调试面板入口</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="https://wiskewu.github.io/posts/sharedworker调试面板入口/" class="q6DmLG_infoCardLink">https://wiskewu.github.io/posts/sharedworker调试面板入口/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/7/3 10:53:32</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></div><aside class="QvVcXW_tocAside"><nav aria-label="目录"><div class="QvVcXW_tocTitle">目录</div><ul class="QvVcXW_tocList"><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#解决办法">解决办法</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#inspect">inspect</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#terminate">terminate</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#扩展知识">扩展知识</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#关于进程">关于进程</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#关于线程">关于线程</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#sharedworker特性">SharedWorker特性</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#与其他worker对比">与其他Worker对比</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#细节补充">细节补充</a></li></ul></nav></aside><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div></main><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/notenoteblog/links/">链接</a><a href="/notenoteblog/feed.xml">RSS</a></div></div></footer></div><script src="https://wiskewu.github.io/notenoteblog/assets/js/client.62da5cb0.js"></script></body></html>

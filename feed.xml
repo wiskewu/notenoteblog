@@ -5,7 +5,93 @@
   <link href="/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-06-17T09:31:44.664Z</updated>
+  <updated>2026-07-03T03:27:38.883Z</updated>
+  <entry>
+    <title>SharedWorker调试面板入口</title>
+    <link href="/posts/sharedworker调试面板入口/" />
+    <id>/posts/sharedworker调试面板入口/</id>
+    <updated>2026/7/3 10:53:32T00:00:00+08:00</updated>
+    <content type="html">&lt;p&gt;&lt;code&gt;SharedWorker&lt;/code&gt;运行在专门的Worker进程，是浏览器单独Worker进程里的一条独立JS线程，和页面进程完全隔离，不和页面Tab渲染进程同进程。&lt;/p&gt;
+&lt;p&gt;也就是说，在当前页面打开&lt;strong&gt;开发者工具&lt;/strong&gt;是无法调试worker代码的。&lt;/p&gt;
+&lt;h2 id=&quot;解决办法&quot; tabindex=&quot;-1&quot;&gt;解决办法&lt;/h2&gt;
+&lt;p&gt;访问&lt;a href=&quot;chrome://inspect#worker&quot;&gt;chrome://inspect#worker&lt;/a&gt;，在这个页面可以看到所有标签页当前活动的worker实例。&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--00.png&quot; alt=&quot;inspect页面&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;inspect页面&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;有两个功能：&lt;/p&gt;
+&lt;h3 id=&quot;inspect&quot; tabindex=&quot;-1&quot;&gt;inspect&lt;/h3&gt;
+&lt;p&gt;点击某个worker下方的&lt;code&gt;inspect&lt;/code&gt;，即可打开新的开发者工具窗口调试worker代码：&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--01.png&quot; alt=&quot;inspect&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;inspect&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;可以看到，worker是没有【元素】审查的面板的。
+除此之外，worker开发者工具窗口还具备以下工具:&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--02.png&quot; alt=&quot;更多工具&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;更多工具&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;terminate&quot; tabindex=&quot;-1&quot;&gt;terminate&lt;/h3&gt;
+&lt;p&gt;点击某个worker下方的&lt;code&gt;terminate&lt;/code&gt;，即可终止这个worker所在的进程。&lt;/p&gt;
+&lt;h2 id=&quot;扩展知识&quot; tabindex=&quot;-1&quot;&gt;扩展知识&lt;/h2&gt;
+&lt;h3 id=&quot;关于进程&quot; tabindex=&quot;-1&quot;&gt;关于进程&lt;/h3&gt;
+&lt;p&gt;进程（Process）是操作系统级别资源隔离单元，有独立内存、PID、CPU 调度单元，互不共享堆内存。&lt;/p&gt;
+&lt;p&gt;浏览器主页面、Tab、插件、GPU、网络、渲染、Worker 进程 都是独立进程。&lt;/p&gt;
+&lt;h3 id=&quot;关于线程&quot; tabindex=&quot;-1&quot;&gt;关于线程&lt;/h3&gt;
+&lt;p&gt;线程（Thread）是同一进程内的轻量执行单元，共享进程堆内存，由内核分时调度。&lt;/p&gt;
+&lt;p&gt;JS 执行是单线程，每个 Worker 内部只有一条 JS 主线程。&lt;/p&gt;
+&lt;h3 id=&quot;sharedworker特性&quot; tabindex=&quot;-1&quot;&gt;SharedWorker特性&lt;/h3&gt;
+&lt;p&gt;SharedWorker 归属于独立进程+内部单 JS 线程。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;普通 DedicatedWorker、SharedWorker、ServiceWorker 统一运行在专门的 Worker 进程，不和页面 Tab 渲染进程同进程；&lt;/li&gt;
+&lt;li&gt;多个页面创建&lt;strong&gt;同源 SharedWorker&lt;/strong&gt;，会&lt;strong&gt;复用&lt;/strong&gt;同一个 Worker 进程实例；&lt;/li&gt;
+&lt;li&gt;不同源 SharedWorker 会新建独立 Worker 进程；&lt;/li&gt;
+&lt;li&gt;Tab 页面关闭，SharedWorker 进程不会立刻销毁，继续存活供其他同源页面复用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;不管 SharedWorker 被多少页面连接，它内部永远只有单个 JS 执行线程：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;self.connect、port.onmessage、定时器、fetch 全部排队串行执行；&lt;/li&gt;
+&lt;li&gt;无法并发跑 JS 逻辑，阻塞一段逻辑就会卡住所有页面的消息处理；&lt;/li&gt;
+&lt;li&gt;如需多线程并行，只能在 SharedWorker 内部再 new DedicatedWorker。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;与其他worker对比&quot; tabindex=&quot;-1&quot;&gt;与其他Worker对比&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;进程归属&lt;/th&gt;
+&lt;th&gt;JS 线程数&lt;/th&gt;
+&lt;th&gt;多页面共享&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;页面主线程&lt;/td&gt;
+&lt;td&gt;Tab 渲染进程&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;不共享&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;DedicatedWorker&lt;/td&gt;
+&lt;td&gt;Worker 独立进程&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;仅创建它的页面可用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SharedWorker&lt;/td&gt;
+&lt;td&gt;Worker 独立进程&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;同源多页面共享同一个实例&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ServiceWorker&lt;/td&gt;
+&lt;td&gt;Worker 独立进程&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;同源全局共享，后台常驻&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&quot;细节补充&quot; tabindex=&quot;-1&quot;&gt;细节补充&lt;/h3&gt;
+&lt;p&gt;关于同源复用：&lt;/p&gt;
+&lt;p&gt;同协议 + 同域名 + 同 SharedWorker 脚本路径 → 共用同一个进程内的 SharedWorker 实例；不同源直接新开进程。&lt;/p&gt;
+&lt;p&gt;关于内存隔离：&lt;/p&gt;
+&lt;p&gt;SharedWorker 进程与 Tab 渲染进程内存完全隔离，只能通过 postMessage / MessageChannel 结构化克隆 / Transfer 传数据，不能直接共享变量。&lt;/p&gt;
+&lt;p&gt;关于生命周期：&lt;/p&gt;
+&lt;p&gt;所有打开它的 Tab 全部关闭后，浏览器才会延迟回收该 SharedWorker 进程；只要还有一个页面持有，进程持续存活。&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Chrome无法离线安装和启用扩展的解决办法</title>
     <link href="/posts/chrome无法离线安装和启用扩展的解决办法/" />
@@ -2235,69 +2321,6 @@
 &lt;li&gt;在“中/英文标点切换”处，查看当前绑定的快捷键，或者关闭快捷键&lt;/li&gt;
 &lt;/ol&gt;
 &lt;figure&gt;&lt;img src=&quot;./assets/windows-inputmethod-zh-symbols--02.png&quot; alt=&quot;快捷键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;快捷键&lt;/figcaption&gt;&lt;/figure&gt;
-</content>
-  </entry>
-  <entry>
-    <title>PowerShell设置Alias别名命令</title>
-    <link href="/posts/powershell设置alias别名命令/" />
-    <id>/posts/powershell设置alias别名命令/</id>
-    <updated>2026/4/6 01:40:17T00:00:00+08:00</updated>
-    <content type="html">&lt;p&gt;在 PowerShell 中设置快捷别名（Alias）主要有临时生效和永久生效两种方式，核心命令是 &lt;code&gt;Set-Alias&lt;/code&gt;（或 &lt;code&gt;New-Alias&lt;/code&gt;），永久生效需写入 PowerShell 配置文件（Profile）。&lt;/p&gt;
-&lt;p&gt;此文只记录永久设置的方式。&lt;/p&gt;
-&lt;h2 id=&quot;写入永久别名规则&quot; tabindex=&quot;-1&quot;&gt;写入永久别名规则&lt;/h2&gt;
-&lt;p&gt;以将&lt;code&gt;$env:OPENCODE_CONFIG=&amp;quot;E:/githubrefs/opencodecfg/opencode.jsonc&amp;quot;; $env:OPENCODE_CONFIG_DIR=&amp;quot;E:/githubrefs/opencodecfg/prod&amp;quot;; opencode&lt;/code&gt; 设置为别名 &lt;code&gt;myopencode&lt;/code&gt; 为例。&lt;/p&gt;
-&lt;h3 id=&quot;找到或创建配置文件&quot; tabindex=&quot;-1&quot;&gt;找到或创建配置文件&lt;/h3&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-powershell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 查看当前用户配置文件路径&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;$PROFILE&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 输出示例：C:\Users\DELL\Documents\PowerShell\Microsoft.PowerShell_profile.ps1&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 若文件不存在，创建它&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;New-Item&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; -&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Type File &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Path &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;$PROFILE&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; -&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Force&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;编辑配置文件&quot; tabindex=&quot;-1&quot;&gt;编辑配置文件&lt;/h3&gt;
-&lt;p&gt;用记事本打开并添加别名：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-powershell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 打开配置文件&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;notepad &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;$PROFILE&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;写入规则&quot; tabindex=&quot;-1&quot;&gt;写入规则&lt;/h3&gt;
-&lt;p&gt;在配置文件写入以下规则：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-powershell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;__shiki_2fxx5c&quot;&gt; myopencode&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; {&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;env:&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;OPENCODE_CONFIG &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; &quot;E:/githubrefs/opencodecfg/opencode.jsonc&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;env:&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;OPENCODE_CONFIG_DIR &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; &quot;E:/githubrefs/opencodecfg/prod&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;opencode&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;保存并关闭。&lt;/p&gt;
-&lt;h3 id=&quot;生效配置&quot; tabindex=&quot;-1&quot;&gt;生效配置&lt;/h3&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-powershell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 立即加载配置（无需重启 PowerShell）&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; $PROFILE&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 或重启 PowerShell 自动生效&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;在PowerShell 中输入 &lt;code&gt;myopencode&lt;/code&gt; 即可启动带有参数的 opencode。&lt;/p&gt;
-&lt;h2 id=&quot;引申了解&quot; tabindex=&quot;-1&quot;&gt;引申了解&lt;/h2&gt;
-&lt;h3 id=&quot;临时别名&quot; tabindex=&quot;-1&quot;&gt;临时别名&lt;/h3&gt;
-&lt;p&gt;临时别名仅在当前打开的 PowerShell 窗口生效，关闭后消失。
-基础命令：&lt;code&gt;Set-Alias&lt;/code&gt; / &lt;code&gt;sal&lt;/code&gt;&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-powershell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 语法&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;Set-Alias&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; -&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Name &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;别名&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; -&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Value &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;原命令&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;程序&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 简写（推荐）&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sal &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;别名&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; &amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;原命令&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;常用示例：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-powershell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 1. 系统命令别名（如 ls → Get-ChildItem）&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sal ls &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;Get-ChildItem&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sal ll &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;Get-ChildItem -Force&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;  # 带参数需用引号&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 2. 外部程序别名（如 np → 记事本）&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sal np notepad&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sal code &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;C:\Program Files\Microsoft VS Code\Code.exe&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 3. 查看所有别名&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;Get-Alias&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 查看指定别名&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;Get-Alias&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; ls&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;导出/导入别名:&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-powershell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 导出所有别名到文件&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;Export-Alias&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; -&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Path &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;D:\alias_backup.txt&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 导入别名（覆盖现有）&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;Import-Alias&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; -&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Path &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;D:\alias_backup.txt&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; -&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Force&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 </content>
   </entry>
 </feed>
