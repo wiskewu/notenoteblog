@@ -5,7 +5,93 @@
   <link href="/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-07-03T03:27:38.883Z</updated>
+  <updated>2026-07-21T09:30:11.896Z</updated>
+  <entry>
+    <title>SourceMap请求地址重定向</title>
+    <link href="/posts/sourcemap请求地址重定向/" />
+    <id>/posts/sourcemap请求地址重定向/</id>
+    <updated>2026/7/21 16:46:08T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;sourcemap请求地址&quot; tabindex=&quot;-1&quot;&gt;SourceMap请求地址&lt;/h2&gt;
+&lt;p&gt;常见的SourceMap在打包后，默认的形式是在JS产物文件末尾添加注释定义，例如index.js：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;//# sourceMappingURL=index.js.map&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;表示 index.js 文件所在的同级目录处，还存在 index.js.map 源码映射。其文件关系如下：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;dist&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;├── index.js&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;└── index.js.map&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;开发者工具查看请求地址&quot; tabindex=&quot;-1&quot;&gt;开发者工具查看请求地址&lt;/h2&gt;
+&lt;p&gt;从浏览器开发者工具【更多工具-开发者资源】选项卡中，可以查看 SourceMap 的完整请求地址：&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sourcemap-00.png&quot; alt=&quot;开发者资源&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;开发者资源&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;其中涉及的字段解释如下:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;网址（URL）: 完整SourceMap请求地址&lt;/li&gt;
+&lt;li&gt;启动器（initiator）：是哪个JS文件发起的SourceMap请求&lt;/li&gt;
+&lt;li&gt;总字节数（Total Bytes）：map文件的大小&lt;/li&gt;
+&lt;li&gt;时长（Duration）：map文件请求时长&lt;/li&gt;
+&lt;li&gt;错误（Error）：可能的404、跨域等失败原因&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;webpack修改sourcemap输出地址&quot; tabindex=&quot;-1&quot;&gt;webpack修改SourceMap输出地址&lt;/h2&gt;
+&lt;p&gt;前提条件，必须开启独立外部SourceMap，&lt;code&gt;devtool&lt;/code&gt;设置为&lt;code&gt;source-map&lt;/code&gt;以生成独立的&lt;code&gt;.map&lt;/code&gt;文件：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// webpack.config.js&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;exports&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; =&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;devtool: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;source-map&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;, &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 此时才会启用sourceMapFilename&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;场景一-输出到相对路径&quot; tabindex=&quot;-1&quot;&gt;场景一：输出到相对路径&lt;/h3&gt;
+&lt;p&gt;假设需要让所有map文件输出到&lt;code&gt;dist/sourcemaps&lt;/code&gt;目录：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// webpack.config.js&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;const&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; path&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; =&lt;/span&gt;&lt;span class=&quot;__shiki_2fxx5c&quot;&gt; require&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;path&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;);&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;exports&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; =&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;output: {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;path: path.&lt;/span&gt;&lt;span class=&quot;__shiki_2fxx5c&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;(__dirname, &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;dist&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;),&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;filename: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;js/[name].[contenthash].js&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;,&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// map文件输出到 sourcemaps 文件夹&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sourceMapFilename: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;sourcemaps/[file].map&apos;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;},&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;devtool: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;source-map&apos;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;以上配置会：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在磁盘输出&lt;code&gt;dist/sourcemaps/app.xxx.js.map&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;在JS文件末尾自动生成注释: &lt;code&gt;//# sourceMappingURL=sourcemaps/app.xxx.js.map&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;场景二-输出为cdn-绝对域名地址&quot; tabindex=&quot;-1&quot;&gt;场景二：输出为CDN/绝对域名地址&lt;/h3&gt;
+&lt;p&gt;当map文件托管在独立 CDN，需要让 &lt;code&gt;sourceMappingURL&lt;/code&gt; 输出完整 &lt;code&gt;https&lt;/code&gt; 绝对地址，此时可以用插件，不再单纯依赖&lt;code&gt;sourceMapFilename&lt;/code&gt;。&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;const&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; webpack&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; =&lt;/span&gt;&lt;span class=&quot;__shiki_2fxx5c&quot;&gt; require&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;webpack&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;);&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;exports&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; =&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;output: {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;path: path.&lt;/span&gt;&lt;span class=&quot;__shiki_2fxx5c&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;(__dirname, &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;dist&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;),&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;filename: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;[name].[contenthash].js&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;,&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 磁盘输出路径&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sourceMapFilename: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;sourcemaps/[file].map&apos;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;},&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;devtool: &lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;, &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 使用插件时关闭内置devtool&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;plugins: [&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; webpack.&lt;/span&gt;&lt;span class=&quot;__shiki_2fxx5c&quot;&gt;SourceMapDevToolPlugin&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;({&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;filename: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;sourcemaps/[file].map&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;, &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 磁盘输出路径&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 自定义JS末尾的sourceMappingURL注释&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;append: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;//# sourceMappingURL=https://cdn.xxx.com/sourcemaps/[url]&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;,&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 给map自动拼接CDN前缀&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;publicPath: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;https://cdn.xxx.com/&apos;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;})&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;[url]&lt;/code&gt;: 会自动替换成 &lt;code&gt;sourcemaps/app.js.map&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;最终 JS 注释：&lt;code&gt;//# sourceMappingURL=https://cdn.xxx.com/sourcemaps/app.js.map&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;场景三-同域名静态资源使用publicpath&quot; tabindex=&quot;-1&quot;&gt;场景三：同域名静态资源使用publicPath&lt;/h3&gt;
+&lt;p&gt;如果项目静态资源统一 CDN，直接配置 &lt;code&gt;output.publicPath&lt;/code&gt;，无需插件。&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;exports&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; =&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;output: {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;publicPath: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;https://cdn.xxx.com/assets/&apos;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;,&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;sourceMapFilename: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;sourcemaps/[file].map&apos;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;},&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;devtool: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&apos;source-map&apos;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;JS 注释自动拼接 publicPath: &lt;code&gt;//# sourceMappingURL=https://cdn.xxx.com/assets/sourcemaps/app.js.map&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&quot;使用场景&quot; tabindex=&quot;-1&quot;&gt;使用场景&lt;/h2&gt;
+&lt;p&gt;在开发过程中，可能会对线上的js文件进行代理以进行本地调试，但此时调试源码时使用的依然是旧的 SourceMap，导致断点不准确、源码不正确等问题。此时就可以通过修改 SourceMap 的 URL 地址，将 SourceMap 请求重定向至本地代理环境，以实现js模块和源码映射的版本关系匹配。&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>SharedWorker调试面板入口</title>
     <link href="/posts/sharedworker调试面板入口/" />
@@ -2293,34 +2379,6 @@
 &lt;h2 id=&quot;更多设置&quot; tabindex=&quot;-1&quot;&gt;更多设置&lt;/h2&gt;
 &lt;p&gt;使用快捷键&lt;code&gt;CTRL + ,&lt;/code&gt;打开设置界面，选择「操作」菜单，修改和查看更多快捷键功能。&lt;/p&gt;
 &lt;figure&gt;&lt;img src=&quot;./assets/windows-terminal-keybindings--00.png&quot; alt=&quot;操作快捷键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;操作快捷键&lt;/figcaption&gt;&lt;/figure&gt;
-</content>
-  </entry>
-  <entry>
-    <title>微软拼音输入法中英文标点误切问题</title>
-    <link href="/posts/微软拼音输入法中英文标点误切问题/" />
-    <id>/posts/微软拼音输入法中英文标点误切问题/</id>
-    <updated>2026/4/17 14:57:20T00:00:00+08:00</updated>
-    <content type="html">&lt;p&gt;使用微软自带的拼音输入法，有时会出现这样的问题：输入中文的逗号&lt;code&gt;，&lt;/code&gt;显示的却是英文的逗号&lt;code&gt;,&lt;/code&gt;。可以按照下述方法修复。&lt;/p&gt;
-&lt;h2 id=&quot;一键修复&quot; tabindex=&quot;-1&quot;&gt;一键修复&lt;/h2&gt;
-&lt;p&gt;使用快捷键&lt;code&gt;CTRL + .&lt;/code&gt;（Ctrl + 句号）：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;按下一次：切回中文标点&lt;code&gt;，。&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;再按一次：切回英文标点&lt;code&gt;,.&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;关闭快捷键&quot; tabindex=&quot;-1&quot;&gt;关闭快捷键&lt;/h2&gt;
-&lt;p&gt;按照以下步骤查看快捷键以及关闭快捷键：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;右键状态栏输入法图标&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/windows-inputmethod-zh-symbols--00.png&quot; alt=&quot;右键输入法图标&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;右键输入法图标&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;ol start=&quot;2&quot;&gt;
-&lt;li&gt;打开设置，选择按键&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/windows-inputmethod-zh-symbols--01.png&quot; alt=&quot;按键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;按键&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;ol start=&quot;3&quot;&gt;
-&lt;li&gt;在“中/英文标点切换”处，查看当前绑定的快捷键，或者关闭快捷键&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/windows-inputmethod-zh-symbols--02.png&quot; alt=&quot;快捷键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;快捷键&lt;/figcaption&gt;&lt;/figure&gt;
 </content>
   </entry>
 </feed>
