@@ -5,7 +5,17 @@
   <link href="til/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-07-21T09:30:11.906Z</updated>
+  <updated>2026-07-28T10:06:36.343Z</updated>
+  <entry>
+    <title>TIL 2026/7/28 11:10:46</title>
+    <link href="/til/终端中常用的快捷键/" />
+    <id>/til/终端中常用的快捷键/</id>
+    <updated>2026/7/28 11:10:46T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;终端中常用的快捷键&quot; tabindex=&quot;-1&quot;&gt;终端中常用的快捷键&lt;/h2&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/ascii-control-character-00.png&quot; alt=&quot;ASCII Control Characters&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;ASCII Control Characters&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;详见地址&lt;a href=&quot;https://jvns.ca/ascii&quot;&gt;ASCII Control Characters&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>TIL 2026/5/11 13:09:28</title>
     <link href="/til/本地静态文件服务器/" />
@@ -134,18 +144,6 @@
     <updated>2026/4/10 23:20:13T00:00:00+08:00</updated>
     <content type="html">&lt;h2 id=&quot;a-complete-guide-to-useeffect&quot; tabindex=&quot;-1&quot;&gt;A Complete Guide to useEffect&lt;/h2&gt;
 &lt;p&gt;一份关于React &lt;code&gt;useEffect&lt;/code&gt; 的深入指南。&lt;a href=&quot;https://overreacted.io/a-complete-guide-to-useeffect/&quot;&gt;A Complete Guide to useEffect&lt;/a&gt;&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>TIL 2026/4/10 17:41:49</title>
-    <link href="/til/杀死那个写代码的人/" />
-    <id>/til/杀死那个写代码的人/</id>
-    <updated>2026/4/10 17:41:49T00:00:00+08:00</updated>
-    <content type="html">&lt;h2 id=&quot;杀死那个写代码的人&quot; tabindex=&quot;-1&quot;&gt;杀死那个写代码的人&lt;/h2&gt;
-&lt;p&gt;“问题是复杂的，但你可以通过自己的思考，把它变得清晰、可控、甚至优雅。”&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;---摘自&lt;a href=&quot;https://windliang.wang/2026/03/31/%E6%9D%80%E6%AD%BB%E9%82%A3%E4%B8%AA%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E4%BA%BA&quot;&gt;杀死那个写代码的人&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
 </content>
   </entry>
 </feed>

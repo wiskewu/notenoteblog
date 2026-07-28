@@ -1,0 +1,152 @@
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>架构决策记录ADR - Adiós</title><link href="https://wiskewu.github.io/notenoteblog/favicon.ico" rel="icon" /><link title="RSS" href="https://wiskewu.github.io/notenoteblog/feed.xml" type="application/atom+xml" rel="alternate" /><script>document.documentElement.style.setProperty('--code-collapse-lines', '15');</script><link href="https://wiskewu.github.io/notenoteblog/assets/css/style.0fccb961.css" rel="stylesheet" />
+</head><body data-back-top-enabled="true"><div class="_1BqNCq_layout"><header data-navbar="true" class="_1BqNCq_header"><nav class="_1BqNCq_nav"><a href="/notenoteblog/" class="_1BqNCq_logo">Adiós</a><div class="_1BqNCq_links"><a href="/notenoteblog/">首页</a><a href="/notenoteblog/til/">TIL</a><a href="/notenoteblog/archives/">归档</a><a href="/notenoteblog/about/">关于</a><button data-theme-toggle="true" class="_1BqNCq_themeBtn" type="button" aria-label="切换主题"><span class="_1BqNCq_iconSun"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="_1BqNCq_iconMoon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button></div></nav></header><main class="QvVcXW_articleLayout"><div class="QvVcXW_articleContainer"><div class="QvVcXW_articleHeader"><h1 class="QvVcXW_articleTitle">架构决策记录ADR</h1><div class="q6DmLG_meta"><span class="q6DmLG_metaItem"><time>2026/7/28 17:11:09</time></span><span class="q6DmLG_metaItem">10 分钟阅读</span><div class="q6DmLG_tagList"><a class="q6DmLG_tag" href="/notenoteblog/tags/#AI/">AI</a><a class="q6DmLG_tag" href="/notenoteblog/tags/#Terms/">Terms</a></div></div></div><div class="yRPMta_markdownContent"><h2 id="什么是adr" tabindex="-1">什么是ADR</h2>
+<p>ADR（Architecture Decision Record）架构决策记录，是用于记录重大架构/技术选型决策等的标准化文档。</p>
+<h2 id="为什么要使用adr" tabindex="-1">为什么要使用ADR</h2>
+<p>很多团队的文档常常陷入误区：只记录“代码做了什么”，从不记录“为什么这么做”。代码只能展示最终实现结果，但架构取舍、场景约束、舍弃的方案、预埋的技术债务，经常随着人员离职、时间迭代而彻底丢失，而ADR就是用于解决这个隐患。</p>
+<h2 id="什么时候使用adr" tabindex="-1">什么时候使用ADR</h2>
+<p>所有反向修改成本极高、影响整体架构、长期生效的决策，都应该使用ADR进行记录，如：</p>
+<ul>
+<li>技术栈、框架、核心第三方依赖的选型；</li>
+<li>数据模型、数据库表结构核心设计方案；</li>
+<li>系统鉴权、安全、认证策略设计；</li>
+<li>API架构选型（REST/TRPC等）；</li>
+<li>构建工具、部署平台、基础设施选型；</li>
+<li>影响用户侧的核心功能改版、架构重构；</li>
+<li>需要反复给团队新人、AI智能体解释的通用规则；</li>
+</ul>
+<p>而那些“一次性买卖”的场景，则不需要使用ADR进行记录，如：</p>
+<ul>
+<li>直白易懂、无特殊逻辑的常规代码实现；</li>
+<li>一次性BUG修复、微小逻辑迭代；</li>
+<li>临时测试、废弃原型代码的逻辑；</li>
+<li>单纯UI、文案、样式微调；</li>
+</ul>
+<h2 id="adr生命周期" tabindex="-1">ADR生命周期</h2>
+<p>ADR一旦落地，禁止删除和直接修改历史记录。</p>
+<p>ADR拥有固定的生命周期：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-txt"><span class="line"><span class="__shiki_wvjl67">PROPOSED（待提议） → ACCEPTED（已采纳） → SUPERSEDED（被替代） / DEPRECATED（已废弃）</span></span></code></pre>
+<p>关键规则：</p>
+<ol>
+<li>历史ADR永久留存，用于追溯所有架构演变过程；</li>
+<li>决策变更时，新建一篇ADR，标记旧ADR为「被替代」，并关联旧文档；</li>
+<li>废弃的ADR仅作状态标记，不删除，不改动原文；</li>
+</ol>
+<h2 id="adr规范" tabindex="-1">ADR规范</h2>
+<h3 id="目录结构" tabindex="-1">目录结构</h3>
+<p>所有ADR统一归档，项目全局唯一入口：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-txt"><span class="line"><span class="__shiki_wvjl67">docs/</span></span>
+<span class="line"><span class="__shiki_wvjl67">└── decisions/        # 官方推荐目录（也可统一用 docs/adr/）</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">├── README.md     # ADR 全局索引目录</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">├── ADR-001-xxx.md</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">├── ADR-002-xxx.md</span></span>
+<span class="line"><span class="indent">  </span><span class="indent">  </span><span class="__shiki_wvjl67">└── ...</span></span></code></pre>
+<h3 id="命名规则" tabindex="-1">命名规则</h3>
+<p>固定格式：<code>ADR-序号-短横线小写标题.md</code></p>
+<p>示例：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-txt"><span class="line"><span class="__shiki_wvjl67">- ADR-001-use-postgresql-as-primary-db.md</span></span>
+<span class="line"><span class="__shiki_wvjl67">- ADR-002-cache-consistency-strategy.md</span></span></code></pre>
+<h3 id="readme索引规范" tabindex="-1">README索引规范</h3>
+<p>必须维护索引文件，方便团队和 AI 智能体快速检索所有架构决策：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-markdown"><span class="line"><span class="__shiki_10352w"># 架构决策记录索引（ADR）</span></span>
+<span class="line"><span class="__shiki_10352w">## 状态说明</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> Proposed：待评审落地</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> Accepted：正式生效执行</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> Deprecated：已废弃停用</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> Superseded：被新 ADR 替代</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 决策清单</span></span>
+<span class="line"><span class="__shiki_1pf2xz">| 编号 | 标题 | 状态 | 更新日期 |</span></span>
+<span class="line"><span class="__shiki_1pf2xz">| ---- | ---- | ---- | -------- |</span></span>
+<span class="line"><span class="__shiki_1pf2xz">| ADR-001 | 核心数据库选型方案 | Accepted | 2026-07-28 |</span></span></code></pre>
+<h3 id="配套文档规范" tabindex="-1">配套文档规范</h3>
+<p>ADR 是顶层架构记录，需要底层代码文档配合，形成完整闭环。</p>
+<h4 id="代码注释" tabindex="-1">代码注释</h4>
+<p>在代码注释时，应只注释「为什么」，不注释「是什么」。</p>
+<p>错误示例（重复代码，无意义）：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 计数器+1</span></span>
+<span class="line"><span class="__shiki_1pf2xz">counter </span><span class="__shiki_13ief6">+=</span><span class="__shiki_1r536h"> 1</span><span class="__shiki_1pf2xz">;</span></span></code></pre>
+<p>正确示例（解释设计意图、特殊约束、规避风险）：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-js"><span class="line"><span class="__shiki_25oonp">// 滑动窗口限流：窗口边界重置计数器，而非固定周期重置</span></span>
+<span class="line"><span class="__shiki_25oonp">// 规避边界突发流量击穿风险，详见 ADR-005 限流架构设计</span></span>
+<span class="line"><span class="__shiki_13ief6">if</span><span class="__shiki_1pf2xz"> (now </span><span class="__shiki_13ief6">-</span><span class="__shiki_1pf2xz"> windowStart </span><span class="__shiki_13ief6">></span><span class="__shiki_1r536h"> WINDOW_SIZE_MS</span><span class="__shiki_1pf2xz">) {</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">counter </span><span class="__shiki_13ief6">=</span><span class="__shiki_1r536h"> 0</span><span class="__shiki_1pf2xz">;</span></span>
+<span class="line"><span class="indent">  </span><span class="__shiki_1pf2xz">windowStart </span><span class="__shiki_13ief6">=</span><span class="__shiki_1pf2xz"> now;</span></span>
+<span class="line"><span class="__shiki_1pf2xz">}</span></span></code></pre>
+<h4 id="禁止的文档陋习" tabindex="-1">禁止的文档陋习</h4>
+<ul>
+<li>不写复述代码的无效注释</li>
+<li>不长期遗留空 TODO 注释（能改立刻改，不能改写入 ADR 待优化）</li>
+<li>不保留注释掉的废弃代码（Git 可追溯，无需冗余留存）</li>
+</ul>
+<h4 id="api文档规范" tabindex="-1">API文档规范</h4>
+<ul>
+<li>TS 项目优先使用类型注释 + 函数 JSDoc，标注入参、出参、异常、示例</li>
+<li>REST 接口统一维护 OpenAPI/Swagger 文档</li>
+<li>所有特殊业务约束、接口设计逻辑，关联对应 ADR 编号</li>
+</ul>
+<h4 id="标准化的adr模板" tabindex="-1">标准化的ADR模板</h4>
+<p>遵循官方 MADR / Nygard 通用规范，适配人工编写 + AI 生成，结构极简、信息完整，适配缺陷分析和架构复盘。</p>
+<p>模板可以多种多样，下面举例说明：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-markdown"><span class="line"><span class="__shiki_10352w"># ADR-001：此处填写决策标题</span></span>
+<span class="line"><span class="__shiki_10352w">## 状态</span></span>
+<span class="line"><span class="__shiki_1pf2xz">Accepted / Superseded by ADR-XXX / Deprecated</span></span>
+<span class="line"><span class="__shiki_10352w">## 日期</span></span>
+<span class="line"><span class="__shiki_1pf2xz">2026-07-28</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 一、背景与问题 Context</span></span>
+<span class="line"><span class="__shiki_1pf2xz">描述当前项目现状、业务约束、技术瓶颈、规模限制（并发、数据量、运维人力、合规要求），清晰说明「为什么需要做这次决策」。</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 二、备选方案 Alternatives Considered</span></span>
+<span class="line"><span class="__shiki_1pf2xz">逐条列出所有评估过的方案，</span><span class="__shiki_1ktxls">**必须包含优点 + 致命缺点 + 否决原因**</span><span class="__shiki_1pf2xz">：</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">### 方案1：XXX 方案</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 优点：xxx</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 缺点：xxx（重点写技术债务、潜在 Bug、性能风险、维护成本）</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 结论：采纳/否决</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">### 方案2：XXX 方案</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 优点：xxx</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 缺点：xxx</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 结论：采纳/否决</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">### 方案3：维持现状</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 优点：无改造成本</span></span>
+<span class="line"><span class="__shiki_1g8orr">-</span><span class="__shiki_1pf2xz"> 缺点：遗留问题持续存在，后续风险说明</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 三、最终决策 Decision</span></span>
+<span class="line"><span class="__shiki_1pf2xz">一句话明确最终选型，以及核心落地约束、执行规则。</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 四、正向收益 Consequences Positive</span></span>
+<span class="line"><span class="__shiki_1pf2xz">本次决策带来的业务、技术、效率提升，可量化优先量化。</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 五、负面代价与风险 Consequences Negative</span></span>
+<span class="line"><span class="__shiki_1pf2xz">【缺陷分析核心】</span></span>
+<span class="line"><span class="__shiki_1pf2xz">记录本次选型妥协的所有问题：编码隐患、性能瓶颈、运维成本、数据一致性风险、未来技术债务、已知坑点。</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 六、决策失效触发条件</span></span>
+<span class="line"><span class="__shiki_1pf2xz">明确什么场景下，当前架构决策不再适用，需要重构或替换。</span></span>
+<span class="line"></span>
+<span class="line"><span class="__shiki_10352w">## 七、关联文档</span></span>
+<span class="line"><span class="__shiki_1pf2xz">关联历史 ADR、接口文档、数据库设计、故障复盘记录</span></span></code></pre>
+<h2 id="智能体prompt示例" tabindex="-1">智能体Prompt示例</h2>
+<p>可以使用下述提示词，让AI智能体生成ADR：</p>
+<pre class="shiki shiki-themes github-light-default github-dark-default __shiki_c16w35" tabindex="0"><code class="language-txt"><span class="line"><span class="__shiki_wvjl67">请遵循 ADR 规范，使用标准 MADR 模板，为【具体技术选型/架构方案】编写正式 ADR。</span></span>
+<span class="line"><span class="__shiki_wvjl67">要求：</span></span>
+<span class="line"><span class="__shiki_wvjl67">1. 完整罗列备选方案、优缺点、否决理由；</span></span>
+<span class="line"><span class="__shiki_wvjl67">2. 重点详细书写负面代价、潜在代码缺陷和技术债务；</span></span>
+<span class="line"><span class="__shiki_wvjl67">3. 标注决策失效触发条件；</span></span>
+<span class="line"><span class="__shiki_wvjl67">4. 使用 kebab 命名法，适配项目 docs/decisions 目录规范。</span></span></code></pre>
+<h2 id="总结" tabindex="-1">总结</h2>
+<ol>
+<li>ADR时架构取舍的台账、技术债务清单、缺陷溯源手册；</li>
+<li>只记录重大架构决策，不记录琐碎迭代，轻量化落地、长期维护；</li>
+<li>历史 ADR 永不修改，仅新增、替代、标记状态，保证全链路可追溯；</li>
+<li>重点书写备选方案缺点、选型风险、负面代价，为缺陷分析和 AI 迭代提供核心依据；</li>
+<li>搭配规范的代码注释、API 文档、索引目录，形成完整的项目文档体系。</li>
+</ol>
+<h2 id="参考" tabindex="-1">参考</h2>
+<ul>
+<li><a href="https://github.com/architecture-decision-record/architecture-decision-record">architecture-decision-record</a></li>
+<li><a href="https://github.com/addyosmani/agent-skills/blob/main/skills/documentation-and-adrs/SKILL.md">SKILL.md: documentation-and-adrs</a></li>
+</ul>
+</div><div class="q6DmLG_infoCard"><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">标题</span><span class="q6DmLG_infoCardValue">架构决策记录ADR</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">链接</span><span class="q6DmLG_infoCardValue"><a href="https://wiskewu.github.io/posts/架构决策记录adr/" class="q6DmLG_infoCardLink">https://wiskewu.github.io/posts/架构决策记录adr/</a></span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">作者</span><span class="q6DmLG_infoCardValue">wiskewu</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">发布时间</span><span class="q6DmLG_infoCardValue">2026/7/28 17:11:09</span></div><div class="q6DmLG_infoCardRow"><span class="q6DmLG_infoCardLabel">许可协议</span><span class="q6DmLG_infoCardValue"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" class="q6DmLG_infoCardLink">CC BY-NC 4.0</a></span></div></div></div><aside class="QvVcXW_tocAside"><nav aria-label="目录"><div class="QvVcXW_tocTitle">目录</div><ul class="QvVcXW_tocList"><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#什么是adr">什么是ADR</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#为什么要使用adr">为什么要使用ADR</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#什么时候使用adr">什么时候使用ADR</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#adr生命周期">ADR生命周期</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#adr规范">ADR规范</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#目录结构">目录结构</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#命名规则">命名规则</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#readme索引规范">README索引规范</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel3" data-toc-item="true" data-toc-level="3"><a class="QvVcXW_tocLink" href="#配套文档规范">配套文档规范</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel4" data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#代码注释">代码注释</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel4" data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#禁止的文档陋习">禁止的文档陋习</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel4" data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#api文档规范">API文档规范</a></li><li class="QvVcXW_tocItem QvVcXW_tocLevel4" data-toc-item="true" data-toc-level="4"><a class="QvVcXW_tocLink" href="#标准化的adr模板">标准化的ADR模板</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#智能体prompt示例">智能体Prompt示例</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#总结">总结</a></li><li class="QvVcXW_tocItem " data-toc-item="true" data-toc-level="2"><a class="QvVcXW_tocLink" href="#参考">参考</a></li></ul></nav></aside><div class="q6DmLG_progressBar" data-reading-progress="true"><div class="q6DmLG_progressFill"></div></div></main><footer class="_1BqNCq_footer"><div class="_1BqNCq_footerInner"><p class="_1BqNCq_copy">© 2025-2026 Adiós</p><div class="_1BqNCq_footerLinks"><a href="/notenoteblog/links/">链接</a><a href="/notenoteblog/feed.xml">RSS</a></div></div></footer></div><script src="https://wiskewu.github.io/notenoteblog/assets/js/client.62da5cb0.js"></script></body></html>

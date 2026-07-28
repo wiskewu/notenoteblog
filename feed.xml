@@ -5,7 +5,164 @@
   <link href="/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-07-21T09:30:11.896Z</updated>
+  <updated>2026-07-28T10:06:36.336Z</updated>
+  <entry>
+    <title>架构决策记录ADR</title>
+    <link href="/posts/架构决策记录adr/" />
+    <id>/posts/架构决策记录adr/</id>
+    <updated>2026/7/28 17:11:09T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;什么是adr&quot; tabindex=&quot;-1&quot;&gt;什么是ADR&lt;/h2&gt;
+&lt;p&gt;ADR（Architecture Decision Record）架构决策记录，是用于记录重大架构/技术选型决策等的标准化文档。&lt;/p&gt;
+&lt;h2 id=&quot;为什么要使用adr&quot; tabindex=&quot;-1&quot;&gt;为什么要使用ADR&lt;/h2&gt;
+&lt;p&gt;很多团队的文档常常陷入误区：只记录“代码做了什么”，从不记录“为什么这么做”。代码只能展示最终实现结果，但架构取舍、场景约束、舍弃的方案、预埋的技术债务，经常随着人员离职、时间迭代而彻底丢失，而ADR就是用于解决这个隐患。&lt;/p&gt;
+&lt;h2 id=&quot;什么时候使用adr&quot; tabindex=&quot;-1&quot;&gt;什么时候使用ADR&lt;/h2&gt;
+&lt;p&gt;所有反向修改成本极高、影响整体架构、长期生效的决策，都应该使用ADR进行记录，如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;技术栈、框架、核心第三方依赖的选型；&lt;/li&gt;
+&lt;li&gt;数据模型、数据库表结构核心设计方案；&lt;/li&gt;
+&lt;li&gt;系统鉴权、安全、认证策略设计；&lt;/li&gt;
+&lt;li&gt;API架构选型（REST/TRPC等）；&lt;/li&gt;
+&lt;li&gt;构建工具、部署平台、基础设施选型；&lt;/li&gt;
+&lt;li&gt;影响用户侧的核心功能改版、架构重构；&lt;/li&gt;
+&lt;li&gt;需要反复给团队新人、AI智能体解释的通用规则；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;而那些“一次性买卖”的场景，则不需要使用ADR进行记录，如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;直白易懂、无特殊逻辑的常规代码实现；&lt;/li&gt;
+&lt;li&gt;一次性BUG修复、微小逻辑迭代；&lt;/li&gt;
+&lt;li&gt;临时测试、废弃原型代码的逻辑；&lt;/li&gt;
+&lt;li&gt;单纯UI、文案、样式微调；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;adr生命周期&quot; tabindex=&quot;-1&quot;&gt;ADR生命周期&lt;/h2&gt;
+&lt;p&gt;ADR一旦落地，禁止删除和直接修改历史记录。&lt;/p&gt;
+&lt;p&gt;ADR拥有固定的生命周期：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;PROPOSED（待提议） → ACCEPTED（已采纳） → SUPERSEDED（被替代） / DEPRECATED（已废弃）&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;关键规则：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;历史ADR永久留存，用于追溯所有架构演变过程；&lt;/li&gt;
+&lt;li&gt;决策变更时，新建一篇ADR，标记旧ADR为「被替代」，并关联旧文档；&lt;/li&gt;
+&lt;li&gt;废弃的ADR仅作状态标记，不删除，不改动原文；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;adr规范&quot; tabindex=&quot;-1&quot;&gt;ADR规范&lt;/h2&gt;
+&lt;h3 id=&quot;目录结构&quot; tabindex=&quot;-1&quot;&gt;目录结构&lt;/h3&gt;
+&lt;p&gt;所有ADR统一归档，项目全局唯一入口：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;docs/&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;└── decisions/        # 官方推荐目录（也可统一用 docs/adr/）&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;├── README.md     # ADR 全局索引目录&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;├── ADR-001-xxx.md&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;├── ADR-002-xxx.md&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;└── ...&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;命名规则&quot; tabindex=&quot;-1&quot;&gt;命名规则&lt;/h3&gt;
+&lt;p&gt;固定格式：&lt;code&gt;ADR-序号-短横线小写标题.md&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;示例：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;- ADR-001-use-postgresql-as-primary-db.md&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;- ADR-002-cache-consistency-strategy.md&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;readme索引规范&quot; tabindex=&quot;-1&quot;&gt;README索引规范&lt;/h3&gt;
+&lt;p&gt;必须维护索引文件，方便团队和 AI 智能体快速检索所有架构决策：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-markdown&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;# 架构决策记录索引（ADR）&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 状态说明&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; Proposed：待评审落地&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; Accepted：正式生效执行&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; Deprecated：已废弃停用&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; Superseded：被新 ADR 替代&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 决策清单&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;| 编号 | 标题 | 状态 | 更新日期 |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;| ---- | ---- | ---- | -------- |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;| ADR-001 | 核心数据库选型方案 | Accepted | 2026-07-28 |&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;配套文档规范&quot; tabindex=&quot;-1&quot;&gt;配套文档规范&lt;/h3&gt;
+&lt;p&gt;ADR 是顶层架构记录，需要底层代码文档配合，形成完整闭环。&lt;/p&gt;
+&lt;h4 id=&quot;代码注释&quot; tabindex=&quot;-1&quot;&gt;代码注释&lt;/h4&gt;
+&lt;p&gt;在代码注释时，应只注释「为什么」，不注释「是什么」。&lt;/p&gt;
+&lt;p&gt;错误示例（重复代码，无意义）：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 计数器+1&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;counter &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;+=&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; 1&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;正确示例（解释设计意图、特殊约束、规避风险）：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 滑动窗口限流：窗口边界重置计数器，而非固定周期重置&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;// 规避边界突发流量击穿风险，详见 ADR-005 限流架构设计&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; (now &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; windowStart &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; WINDOW_SIZE_MS&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;) {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;counter &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; 0&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;windowStart &lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; now;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&quot;禁止的文档陋习&quot; tabindex=&quot;-1&quot;&gt;禁止的文档陋习&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;不写复述代码的无效注释&lt;/li&gt;
+&lt;li&gt;不长期遗留空 TODO 注释（能改立刻改，不能改写入 ADR 待优化）&lt;/li&gt;
+&lt;li&gt;不保留注释掉的废弃代码（Git 可追溯，无需冗余留存）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;api文档规范&quot; tabindex=&quot;-1&quot;&gt;API文档规范&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;TS 项目优先使用类型注释 + 函数 JSDoc，标注入参、出参、异常、示例&lt;/li&gt;
+&lt;li&gt;REST 接口统一维护 OpenAPI/Swagger 文档&lt;/li&gt;
+&lt;li&gt;所有特殊业务约束、接口设计逻辑，关联对应 ADR 编号&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;标准化的adr模板&quot; tabindex=&quot;-1&quot;&gt;标准化的ADR模板&lt;/h4&gt;
+&lt;p&gt;遵循官方 MADR / Nygard 通用规范，适配人工编写 + AI 生成，结构极简、信息完整，适配缺陷分析和架构复盘。&lt;/p&gt;
+&lt;p&gt;模板可以多种多样，下面举例说明：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-markdown&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;# ADR-001：此处填写决策标题&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 状态&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;Accepted / Superseded by ADR-XXX / Deprecated&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 日期&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;2026-07-28&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 一、背景与问题 Context&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;描述当前项目现状、业务约束、技术瓶颈、规模限制（并发、数据量、运维人力、合规要求），清晰说明「为什么需要做这次决策」。&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 二、备选方案 Alternatives Considered&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;逐条列出所有评估过的方案，&lt;/span&gt;&lt;span class=&quot;__shiki_1ktxls&quot;&gt;**必须包含优点 + 致命缺点 + 否决原因**&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;：&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;### 方案1：XXX 方案&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 优点：xxx&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 缺点：xxx（重点写技术债务、潜在 Bug、性能风险、维护成本）&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 结论：采纳/否决&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;### 方案2：XXX 方案&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 优点：xxx&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 缺点：xxx&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 结论：采纳/否决&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;### 方案3：维持现状&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 优点：无改造成本&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt; 缺点：遗留问题持续存在，后续风险说明&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 三、最终决策 Decision&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;一句话明确最终选型，以及核心落地约束、执行规则。&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 四、正向收益 Consequences Positive&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;本次决策带来的业务、技术、效率提升，可量化优先量化。&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 五、负面代价与风险 Consequences Negative&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;【缺陷分析核心】&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;记录本次选型妥协的所有问题：编码隐患、性能瓶颈、运维成本、数据一致性风险、未来技术债务、已知坑点。&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 六、决策失效触发条件&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;明确什么场景下，当前架构决策不再适用，需要重构或替换。&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_10352w&quot;&gt;## 七、关联文档&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;关联历史 ADR、接口文档、数据库设计、故障复盘记录&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;智能体prompt示例&quot; tabindex=&quot;-1&quot;&gt;智能体Prompt示例&lt;/h2&gt;
+&lt;p&gt;可以使用下述提示词，让AI智能体生成ADR：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;请遵循 ADR 规范，使用标准 MADR 模板，为【具体技术选型/架构方案】编写正式 ADR。&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;要求：&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;1. 完整罗列备选方案、优缺点、否决理由；&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;2. 重点详细书写负面代价、潜在代码缺陷和技术债务；&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;3. 标注决策失效触发条件；&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;4. 使用 kebab 命名法，适配项目 docs/decisions 目录规范。&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;总结&quot; tabindex=&quot;-1&quot;&gt;总结&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;ADR时架构取舍的台账、技术债务清单、缺陷溯源手册；&lt;/li&gt;
+&lt;li&gt;只记录重大架构决策，不记录琐碎迭代，轻量化落地、长期维护；&lt;/li&gt;
+&lt;li&gt;历史 ADR 永不修改，仅新增、替代、标记状态，保证全链路可追溯；&lt;/li&gt;
+&lt;li&gt;重点书写备选方案缺点、选型风险、负面代价，为缺陷分析和 AI 迭代提供核心依据；&lt;/li&gt;
+&lt;li&gt;搭配规范的代码注释、API 文档、索引目录，形成完整的项目文档体系。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;参考&quot; tabindex=&quot;-1&quot;&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/architecture-decision-record/architecture-decision-record&quot;&gt;architecture-decision-record&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/addyosmani/agent-skills/blob/main/skills/documentation-and-adrs/SKILL.md&quot;&gt;SKILL.md: documentation-and-adrs&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+  </entry>
   <entry>
     <title>SourceMap请求地址重定向</title>
     <link href="/posts/sourcemap请求地址重定向/" />
@@ -2285,100 +2442,6 @@
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --version&lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt; # 输出 1.x.x 即为成功&lt;/span&gt;&lt;/span&gt;
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 再执行原命令即可生效&lt;/span&gt;&lt;/span&gt;
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; config&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; set&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; registry&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; http://192.168.25.57:8081/repository/npm-group/&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Windows Terminal分屏与调整尺寸常用快捷键</title>
-    <link href="/posts/windows-terminal分屏与调整尺寸常用快捷键/" />
-    <id>/posts/windows-terminal分屏与调整尺寸常用快捷键/</id>
-    <updated>2026/4/17 15:54:07T00:00:00+08:00</updated>
-    <content type="html">&lt;div class=&quot;markdown-alert markdown-alert-note&quot;&gt;
-&lt;p class=&quot;markdown-alert-title&quot;&gt;Note&lt;/p&gt;
-&lt;p&gt;此博客灵感来源来自&lt;a href=&quot;https://blog.myshawn.com/blog/windows-terminal-%E5%88%86%E5%B1%8F%E4%B8%8E%E8%B0%83%E6%95%B4%E5%BF%AB%E6%8D%B7%E9%94%AE/&quot;&gt;Windows Terminal 分屏与调整常用快捷键总结&lt;/a&gt;&lt;/p&gt;
-&lt;/div&gt;
-&lt;p&gt;此处记录 WindowsTerminal 终端窗口分屏和调整大小的常用操作快捷键。&lt;/p&gt;
-&lt;h2 id=&quot;窗口分屏&quot; tabindex=&quot;-1&quot;&gt;窗口分屏&lt;/h2&gt;
-&lt;p&gt;将当前的标签页分割为多个独立运行的窗口。&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;操作项目&lt;/th&gt;
-&lt;th&gt;默认快捷键&lt;/th&gt;
-&lt;th&gt;说明&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;垂直分屏&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + +&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;将窗口左右平分，增加一个垂直边界&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;水平分屏&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + -&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;将窗口上下平分，增加一个水平边界&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;自动分屏&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + D&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;自动根据长宽比选额最佳方向进行分屏&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id=&quot;调整窗格大小&quot; tabindex=&quot;-1&quot;&gt;调整窗格大小&lt;/h2&gt;
-&lt;p&gt;选中目标窗格后，通过以下组合键微调边界位置。&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;操作项目&lt;/th&gt;
-&lt;th&gt;默认快捷键&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;向左调整大小&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + ←&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;向右调整大小&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + →&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;向上调整大小&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + ↑&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;向下调整大小&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + ↓&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id=&quot;导航与管理&quot; tabindex=&quot;-1&quot;&gt;导航与管理&lt;/h2&gt;
-&lt;p&gt;在多个分屏之间快速切换或者关闭。&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;操作项目&lt;/th&gt;
-&lt;th&gt;默认快捷键&lt;/th&gt;
-&lt;th&gt;说明&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;切换焦点&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + 方向键&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;将光标移动到相邻的窗格&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;关闭窗格&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;Alt + Shift + W&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;关闭当前光标所在的窗格&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id=&quot;更多设置&quot; tabindex=&quot;-1&quot;&gt;更多设置&lt;/h2&gt;
-&lt;p&gt;使用快捷键&lt;code&gt;CTRL + ,&lt;/code&gt;打开设置界面，选择「操作」菜单，修改和查看更多快捷键功能。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/windows-terminal-keybindings--00.png&quot; alt=&quot;操作快捷键&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;操作快捷键&lt;/figcaption&gt;&lt;/figure&gt;
 </content>
   </entry>
 </feed>
