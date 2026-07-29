@@ -5,7 +5,7 @@
   <link href="/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-07-28T10:06:36.336Z</updated>
+  <updated>2026-07-29T11:42:34.772Z</updated>
   <entry>
     <title>架构决策记录ADR</title>
     <link href="/posts/架构决策记录adr/" />
@@ -177,7 +177,7 @@
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;└── index.js.map&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id=&quot;开发者工具查看请求地址&quot; tabindex=&quot;-1&quot;&gt;开发者工具查看请求地址&lt;/h2&gt;
 &lt;p&gt;从浏览器开发者工具【更多工具-开发者资源】选项卡中，可以查看 SourceMap 的完整请求地址：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/sourcemap-00.png&quot; alt=&quot;开发者资源&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;开发者资源&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sourcemap-00.png&quot; alt=&quot;开发者资源&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;开发者资源&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;其中涉及的字段解释如下:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;网址（URL）: 完整SourceMap请求地址&lt;/li&gt;
@@ -258,14 +258,14 @@
 &lt;p&gt;也就是说，在当前页面打开&lt;strong&gt;开发者工具&lt;/strong&gt;是无法调试worker代码的。&lt;/p&gt;
 &lt;h2 id=&quot;解决办法&quot; tabindex=&quot;-1&quot;&gt;解决办法&lt;/h2&gt;
 &lt;p&gt;访问&lt;a href=&quot;chrome://inspect#worker&quot;&gt;chrome://inspect#worker&lt;/a&gt;，在这个页面可以看到所有标签页当前活动的worker实例。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--00.png&quot; alt=&quot;inspect页面&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;inspect页面&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--00.png&quot; alt=&quot;inspect页面&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;inspect页面&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;有两个功能：&lt;/p&gt;
 &lt;h3 id=&quot;inspect&quot; tabindex=&quot;-1&quot;&gt;inspect&lt;/h3&gt;
 &lt;p&gt;点击某个worker下方的&lt;code&gt;inspect&lt;/code&gt;，即可打开新的开发者工具窗口调试worker代码：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--01.png&quot; alt=&quot;inspect&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;inspect&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--01.png&quot; alt=&quot;inspect&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;inspect&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;可以看到，worker是没有【元素】审查的面板的。
 除此之外，worker开发者工具窗口还具备以下工具:&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--02.png&quot; alt=&quot;更多工具&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;更多工具&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/sharedworker-debug-entry--02.png&quot; alt=&quot;更多工具&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;更多工具&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;h3 id=&quot;terminate&quot; tabindex=&quot;-1&quot;&gt;terminate&lt;/h3&gt;
 &lt;p&gt;点击某个worker下方的&lt;code&gt;terminate&lt;/code&gt;，即可终止这个worker所在的进程。&lt;/p&gt;
 &lt;h2 id=&quot;扩展知识&quot; tabindex=&quot;-1&quot;&gt;扩展知识&lt;/h2&gt;
@@ -343,22 +343,22 @@
     <content type="html">&lt;h2 id=&quot;背景&quot; tabindex=&quot;-1&quot;&gt;背景&lt;/h2&gt;
 &lt;p&gt;在Chrome浏览器上参考&lt;a href=&quot;https://he.firefoxcn.net/guide/install-full-version.html&quot;&gt;安装完整版HeaderEditor&lt;/a&gt;离线安装扩展&lt;a href=&quot;https://github.com/FirefoxBar/HeaderEditor&quot;&gt;HeaderEditor)&lt;/a&gt;时报错：&lt;/p&gt;
 &lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;该扩展程序未列在Chrome应用商店中，并可能是在您不知情的情况下添加的。&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--0.png&quot; alt=&quot;安装失败&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;安装失败&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--0.png&quot; alt=&quot;安装失败&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;安装失败&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;这个问题常见于 GoogleChrome 86+，下面给出此问题的解决方案。&lt;/p&gt;
 &lt;h2 id=&quot;解决办法&quot; tabindex=&quot;-1&quot;&gt;解决办法&lt;/h2&gt;
 &lt;h3 id=&quot;步骤一-修改注册表&quot; tabindex=&quot;-1&quot;&gt;步骤一：修改注册表&lt;/h3&gt;
 &lt;p&gt;按住&lt;code&gt;win+R&lt;/code&gt;输入&lt;code&gt;regedit&lt;/code&gt;，打开注册表编辑器。&lt;/p&gt;
 &lt;p&gt;在输入框输入&lt;code&gt;计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionInstallAllowlist&lt;/code&gt;并回车或按路径依次展开：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--1.png&quot; alt=&quot;白名单&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;白名单&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--1.png&quot; alt=&quot;白名单&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;白名单&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;正常情况下，这里不包含&lt;code&gt;HeaderEditor&lt;/code&gt;插件的id&amp;quot;jhigoaelcgmfbidkocglkcnhmfacajle&amp;quot;的项。&lt;/p&gt;
 &lt;p&gt;在右侧空白处右键-&amp;gt;新建-&amp;gt;可扩充字符串值，然后编辑项，填入数值名称（需保持唯一）和数值数据：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--2.png&quot; alt=&quot;添加项&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;添加项&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--2.png&quot; alt=&quot;添加项&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;添加项&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;h3 id=&quot;步骤二-刷新政策&quot; tabindex=&quot;-1&quot;&gt;步骤二：刷新政策&lt;/h3&gt;
 &lt;p&gt;浏览器访问&lt;code&gt;chrome://policy&lt;/code&gt;，点击&amp;quot;重新加载政策&amp;quot;，查看&amp;quot;Chrome Policies - ExtensionInstallAllowList&amp;quot;是否包含了刚才添加的扩展ID，并且状态处于正常：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--3.png&quot; alt=&quot;政策&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;政策&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--3.png&quot; alt=&quot;政策&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;政策&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;h3 id=&quot;步骤三-重新添加扩展&quot; tabindex=&quot;-1&quot;&gt;步骤三：重新添加扩展&lt;/h3&gt;
 &lt;p&gt;此时就可以到&lt;code&gt;chrome://extensions&lt;/code&gt;页面重新安装插件了：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--4.png&quot; alt=&quot;安装成功&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;安装成功&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/chrome-extension-intall-failed--4.png&quot; alt=&quot;安装成功&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;安装成功&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;h2 id=&quot;其他说明&quot; tabindex=&quot;-1&quot;&gt;其他说明&lt;/h2&gt;
 &lt;p&gt;Chrome浏览器的最新政策可以到以下地址查看：&lt;/p&gt;
 &lt;ul&gt;
@@ -471,11 +471,11 @@
 &lt;h2 id=&quot;现象&quot; tabindex=&quot;-1&quot;&gt;现象&lt;/h2&gt;
 &lt;p&gt;基于上述场景演化（实际业务场景），运行&lt;code&gt;1H&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;第三方性能计数器工具记录数据如下（仅做演示）：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/canvas2d-context-memory-leak--00.png&quot; alt=&quot;内存记录&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;内存记录&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/canvas2d-context-memory-leak--00.png&quot; alt=&quot;内存记录&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;内存记录&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;可以看到，&lt;code&gt;CommitSize&lt;/code&gt;（提交内存）和&lt;code&gt;WorkingSet&lt;/code&gt;（工作内存）阶梯式突变。&lt;/p&gt;
 &lt;p&gt;通过&lt;code&gt;chrome://tracing&lt;/code&gt;记录数据如下：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/canvas2d-context-memory-leak--01.png&quot; alt=&quot;Tracing-1&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;Tracing-1&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/canvas2d-context-memory-leak--02.png&quot; alt=&quot;Tracing-2&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;Tracing-2&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/canvas2d-context-memory-leak--01.png&quot; alt=&quot;Tracing-1&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;Tracing-1&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/canvas2d-context-memory-leak--02.png&quot; alt=&quot;Tracing-2&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;Tracing-2&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;可以看到，&lt;code&gt;pooled_size&lt;/code&gt;和&lt;code&gt;committed_size&lt;/code&gt;均已达到3G，而&lt;code&gt;v8&lt;/code&gt;内存仅有600M左右。&lt;/p&gt;
 &lt;h2 id=&quot;分析&quot; tabindex=&quot;-1&quot;&gt;分析&lt;/h2&gt;
 &lt;h3 id=&quot;根因&quot; tabindex=&quot;-1&quot;&gt;根因&lt;/h3&gt;
@@ -1026,7 +1026,7 @@
     <updated>2026/4/30 08:55:38T00:00:00+08:00</updated>
     <content type="html">&lt;h2 id=&quot;简介&quot; tabindex=&quot;-1&quot;&gt;简介&lt;/h2&gt;
 &lt;p&gt;本文主要探索&lt;a href=&quot;https://github.com/graphieros/vue-data-ui&quot;&gt;VueDataUI&lt;/a&gt;的甜甜圈&lt;a href=&quot;https://vue-data-ui.graphieros.com/docs#vue-ui-donut&quot;&gt;Donut&lt;/a&gt;组件的环状效果实现原理。如下图：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--00.png&quot; alt=&quot;Donut组件暗黑风格&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;Donut组件暗黑风格&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--00.png&quot; alt=&quot;Donut组件暗黑风格&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;Donut组件暗黑风格&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;h2 id=&quot;简化已生成的html数据&quot; tabindex=&quot;-1&quot;&gt;简化已生成的html数据&lt;/h2&gt;
 &lt;p&gt;我从&lt;a href=&quot;https://vue-data-ui.graphieros.com/docs#vue-ui-donut&quot;&gt;Donut Docs&lt;/a&gt;上把最终生成的html节点拷贝并简化了一下（可以直接拷贝到本地，新建html文件看效果）：&lt;/p&gt;
 &lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;!&lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;DOCTYPE&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; html&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
@@ -1075,7 +1075,7 @@
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;上面这个的效果是只有一个渐变圆环：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--01.png&quot; alt=&quot;简化版donut&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;简化版donut&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--01.png&quot; alt=&quot;简化版donut&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;简化版donut&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;可以看到，组件是基于&lt;code&gt;SVG&lt;/code&gt;进行实现的，大部分数据展示型的图表组件，底层都是基于SVG。SVG优点也很明显，矢量可伸缩，高保真，清晰度高，原生自带DOM事件。&lt;/p&gt;
 &lt;h2 id=&quot;实现原理分析&quot; tabindex=&quot;-1&quot;&gt;实现原理分析&lt;/h2&gt;
 &lt;p&gt;如果把上面的节点按层级和作用进行划分，可以简化为：&lt;/p&gt;
@@ -1172,7 +1172,7 @@
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; class&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;vue-ui-donut-arc-path&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; d&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;...&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; fill&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#aec7e8ff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#1A1A1Aff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke-width&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;1&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; filter&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; class&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;vue-ui-donut-arc-path&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; d&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;...&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; fill&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#ff7f0eff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#1A1A1Aff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke-width&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;1&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; filter&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;注意到这一层的path填充的是具体每块数据的纯色，并且具备filter属性。假设鼠标移动到第一段path上，效果如下：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--03.png&quot; alt=&quot;hover模糊&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;hover模糊&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--03.png&quot; alt=&quot;hover模糊&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;hover模糊&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;此时节点数据如下，增加了&lt;code&gt;filter=&amp;quot;url(#blur_3bdd3261)&amp;quot;&lt;/code&gt;：&lt;/p&gt;
 &lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; class&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;vue-ui-donut-arc-path&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; d&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;...&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; fill&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#1f77b4ff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#1A1A1Aff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke-width&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;1&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; filter&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; class&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;vue-ui-donut-arc-path&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; d&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;...&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; fill&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#aec7e8ff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;#1A1A1Aff&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; stroke-width&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;1&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; filter&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;url(#blur_3bdd3261)&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
@@ -1213,7 +1213,7 @@
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_1vtg3k&quot;&gt;defs&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;其使用到的地方只有一处，即&lt;code&gt;&amp;lt;circle cx=&amp;quot;256&amp;quot; cy=&amp;quot;180&amp;quot; r=&amp;quot;108&amp;quot; fill=&amp;quot;url(#gradient_3bdd3261)&amp;quot;&amp;gt;&amp;lt;/circle&amp;gt;&lt;/code&gt;。
 也就是说，整个Donut组件只使用到一个渐变颜色，从元素选择器中可以看到&lt;code&gt;&amp;lt;circle&amp;gt;&lt;/code&gt;的大小范围：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--02.png&quot; alt=&quot;circle渐变&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;circle渐变&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--02.png&quot; alt=&quot;circle渐变&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;circle渐变&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;按照上述的层级划分，可以看到渲染层按照SVG绘制顺序叠加如下：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;第一层：白色底层path&lt;/li&gt;
@@ -1359,7 +1359,7 @@
 &lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
 &lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&amp;#x3C;/&lt;/span&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;效果如下：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--04.png&quot; alt=&quot;AI实现效果&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;AI实现效果&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/vueui-donut-implement--04.png&quot; alt=&quot;AI实现效果&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;AI实现效果&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;基本与Donut效果一致。&lt;/p&gt;
 </content>
   </entry>
@@ -2372,11 +2372,11 @@
     <updated>2026/4/21 15:51:06T00:00:00+08:00</updated>
     <content type="html">&lt;h2 id=&quot;背景&quot; tabindex=&quot;-1&quot;&gt;背景&lt;/h2&gt;
 &lt;p&gt;在使用&lt;code&gt;yarn config set registry &amp;quot;http://192.168.25.57:8081/repository/npm-group/&amp;quot;&lt;/code&gt;，出现以下错误提示：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--00.png&quot; alt=&quot;注册表设置错误&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;注册表设置错误&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--00.png&quot; alt=&quot;注册表设置错误&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;注册表设置错误&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;h2 id=&quot;核心原因&quot; tabindex=&quot;-1&quot;&gt;核心原因&lt;/h2&gt;
 &lt;p&gt;排查后，发现是由于不同版本API变化导致的。当前使用的是 Yarn 2+（Berry，包括 v2/v3/v4），而 &lt;code&gt;registry&lt;/code&gt; 配置项和 &lt;code&gt;yarn config set registry&lt;/code&gt; 命令，是 Yarn 1.x（Classic）的用法，在新版本中已被废弃。&lt;/p&gt;
 &lt;p&gt;查看当前版本：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--01.png&quot; alt=&quot;v3.2.4&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;v3.2.4&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--01.png&quot; alt=&quot;v3.2.4&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;v3.2.4&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;h3 id=&quot;版本差异对比&quot; tabindex=&quot;-1&quot;&gt;版本差异对比&lt;/h3&gt;
 &lt;table&gt;
 &lt;thead&gt;
@@ -2419,7 +2419,7 @@
 &lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; config&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; set&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; npmRegistryServer&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; &quot;http://192.168.25.57:8081/repository/npm-group/&quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;h4 id=&quot;yn0001错误处理&quot; tabindex=&quot;-1&quot;&gt;YN0001错误处理&lt;/h4&gt;
 &lt;p&gt;设置完源之后，执行&lt;code&gt;yarn&lt;/code&gt;安装依赖，出现以下错误信息：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--02.png&quot; alt=&quot;YN0001 error&quot; tabindex=&quot;0&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;YN0001 error&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--02.png&quot; alt=&quot;YN0001 error&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;YN0001 error&lt;/figcaption&gt;&lt;/figure&gt;
 &lt;p&gt;这个 YN0001 错误是 Yarn 2+（Berry 系列，当前用的是 Yarn 3.2.4）的安全机制导致的：Yarn 默认会拒绝所有 HTTP（非 HTTPS）协议的请求，以防止中间人攻击。当前私有仓库地址 &lt;code&gt;http://192.168.25.57:8081/...&lt;/code&gt; 使用了 HTTP，需要手动将该地址加入白名单。&lt;/p&gt;
 &lt;h5 id=&quot;添加白名单&quot; tabindex=&quot;-1&quot;&gt;添加白名单&lt;/h5&gt;
 &lt;p&gt;修改项目根目录的 &lt;code&gt;.yarnrc.yml&lt;/code&gt; 文件，在文件中添加 &lt;code&gt;unsafeHttpWhitelist&lt;/code&gt; 配置，把私有仓库主机地址加入白名单：&lt;/p&gt;
