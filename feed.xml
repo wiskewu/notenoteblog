@@ -5,7 +5,132 @@
   <link href="/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-08-01T03:36:52.242Z</updated>
+  <updated>2026-08-28T07:55:58.070Z</updated>
+  <entry>
+    <title>在工作流中使用Git worktree</title>
+    <link href="/posts/在工作流中使用git-worktree/" />
+    <id>/posts/在工作流中使用git-worktree/</id>
+    <updated>2026/8/28 14:48:51T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;基本概念&quot; tabindex=&quot;-1&quot;&gt;基本概念&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;git worktree&lt;/code&gt;是Git2.5 版本就已提供的功能，允许同一个Git仓库，拥有多个独立工作目录。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;主工作树（main worktree）: 原始项目目录，包含完整的&lt;code&gt;.git&lt;/code&gt;仓库数据库。&lt;/li&gt;
+&lt;li&gt;链接工作树（linked worktree）: 通过&lt;code&gt;git worktree add&lt;/code&gt;创建的额外目录，与主工作树共享同一套提交历史、对象数据库，但每个目录有自己独立的工作文件。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;目录结构示例：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;~/Herd/&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;├── my-project/        # 主工作树，main分支，包含 .git&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;├── my-project-feature/# 链接工作树，feature/login-form分支&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;└── my-project‑hotfix/ # 链接工作树，hotfix/payment‑bug分支&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;与传统分支切换的区别&quot; tabindex=&quot;-1&quot;&gt;与传统分支切换的区别&lt;/h2&gt;
+&lt;p&gt;传统方式：单项目目录，使用&lt;code&gt;git checkout&lt;/code&gt;+&lt;code&gt;git stash&lt;/code&gt;在分支之间来回切换。遇到紧急bug打断开发流程，容易丢失未提交的改动。&lt;/p&gt;
+&lt;p&gt;worktree方式：每个分支对应独立目录，多个分支可以同时打开、编辑、提交、推送，不需要来回切换分支。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[note] 限制
+同一个分支不能同时在多个worktree检出，每个worktree必须绑定不同分支。
+最佳实践：一个任务、一个分支、一个项目目录。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;适合使用worktree的场景为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需要并行处理多个任务：新功能开发+历史版本bug修复；&lt;/li&gt;
+&lt;li&gt;不想频繁被打断，不想使用stash暂存修改到一半的代码；&lt;/li&gt;
+&lt;li&gt;需要同时打开多个分支代码做对比。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;典型的worktree场景如：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;正在&lt;code&gt;feature/checkout&lt;/code&gt;做新功能，代码还没完成，无法生成一次有效的提交；&lt;/li&gt;
+&lt;li&gt;已发行的产品临时出现一个bug，需要立刻做hotfix；&lt;/li&gt;
+&lt;li&gt;此时不需要stash半成品，直接新建一个hotfix的worktree目录修复bug；&lt;/li&gt;
+&lt;li&gt;两个项目互不干扰，一边继续开发新功能，一遍修复线上bug；主目录保持main分支用于合并、评审代码。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;核心命令&quot; tabindex=&quot;-1&quot;&gt;核心命令&lt;/h2&gt;
+&lt;p&gt;下面，以项目&lt;a href=&quot;https://github.com/xindoo/agentic-design-patterns&quot;&gt;&lt;code&gt;agentic-design-patterns&lt;/code&gt;&lt;/a&gt;为例进行演示，将项目clone到本地。&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;cd&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; /e/testspace&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; clone&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; https://github.com/xindoo/agentic-design-patterns.git&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/git-worktree-00.png&quot; alt=&quot;agentic-design-patterns&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;agentic-design-patterns&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;添加worktree&quot; tabindex=&quot;-1&quot;&gt;添加worktree&lt;/h3&gt;
+&lt;h4 id=&quot;给已有分支创建worktree&quot; tabindex=&quot;-1&quot;&gt;给已有分支创建worktree&lt;/h4&gt;
+&lt;p&gt;查看当前所有分支：&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/git-worktree-01.png&quot; alt=&quot;所有分支&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;所有分支&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;当前处于&lt;code&gt;main&lt;/code&gt;分支，使用以下命令为&lt;code&gt;dev&lt;/code&gt;分支创建一个新的工作目录：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; worktree&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; add&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; ../agentic-design-patterns--dev&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; dev&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;新目录放在主目录同级。&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/git-worktree-02.png&quot; alt=&quot;基于dev分支的工作目录&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;基于dev分支的工作目录&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;可以看到，新目录&lt;code&gt;agentic-design-patterns--dev&lt;/code&gt; 拥有完整的代码文件夹，并且与主目录共享同一个&lt;code&gt;.git&lt;/code&gt;对象数据库，处于&lt;code&gt;dev&lt;/code&gt;分支；&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;agentic-design-patterns&lt;/code&gt;仍处于&lt;code&gt;main&lt;/code&gt;分支。&lt;/p&gt;
+&lt;h4 id=&quot;给新分支创建worktree&quot; tabindex=&quot;-1&quot;&gt;给新分支创建worktree&lt;/h4&gt;
+&lt;p&gt;使用以下命令，创建新的分支&lt;code&gt;feature/abc&lt;/code&gt;，并基于这个分支创建worktree工作目录：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; worktree&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; add&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -b&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; feature/abc&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; ../agentic-design-patterns--feature-abc&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/git-worktree-03.png&quot; alt=&quot;创建feature/abc分支的工作目录&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;创建feature/abc分支的工作目录&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;查看所有worktree&quot; tabindex=&quot;-1&quot;&gt;查看所有worktree&lt;/h3&gt;
+&lt;p&gt;使用以下命令，查看仓库中所有worktree：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; worktree&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; list&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;输出会显示：目录路径、commit hash、绑定的分支名，快速看清哪个目录对应哪个分支，避免重复检出同一分支。&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/git-worktree-04.png&quot; alt=&quot;查看所有worktree&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;查看所有worktree&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;合并worktree分支&quot; tabindex=&quot;-1&quot;&gt;合并worktree分支&lt;/h3&gt;
+&lt;p&gt;worktree 的分支合并和普通 git 合并完全一样：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在 feature 的 worktree 目录完成开发，提交所有改动；&lt;/li&gt;
+&lt;li&gt;切回主工作树目录，切换到 main；&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;git merge&lt;/code&gt; 合并 &lt;code&gt;feature/abc&lt;/code&gt; 分支；&lt;/li&gt;
+&lt;li&gt;解决可能的冲突，然后 push 到远端仓库。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 在feature/abc 分支产生变更&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;cd&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; ../agentic-design-patterns--feature-abc&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;echo&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; &quot;abc&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_13ief6&quot;&gt; &gt;&gt;&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; README.md&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; add&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; README.md&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; commit&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -m&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; &quot;add abc&quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 切回主工作树目录，切换到main分支&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt;cd&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; ../agentic-design-patterns&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; checkout&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; main&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 合并feature/abc分支&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; merge&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; feature/abc&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 解决冲突，然后push到远端仓库&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; push&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; origin&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; main&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/git-worktree-05.png&quot; alt=&quot;合并worktree分支提交&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;合并worktree分支提交&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;删除worktree&quot; tabindex=&quot;-1&quot;&gt;删除worktree&lt;/h3&gt;
+&lt;p&gt;任务完成后清理链接工作树：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; worktree&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; remove&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; ../agentic-design-patterns--feature-abc&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;默认只能删除干净的工作区（无未提交改动），如果存在未提交，可使用&lt;code&gt;--force&lt;/code&gt;强制删除；&lt;/li&gt;
+&lt;li&gt;不能删除主工作树；&lt;/li&gt;
+&lt;li&gt;remove只会删除工作目录，不会删除对应的git分支本身；删除前建议先&lt;code&gt;git status&lt;/code&gt;查看工作区状态，避免误删。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;清理失效的worktree元数据&quot; tabindex=&quot;-1&quot;&gt;清理失效的worktree元数据&lt;/h3&gt;
+&lt;p&gt;如果手动删除某个worktree目录，&lt;code&gt;.git&lt;/code&gt;仍会保留旧的元数据，在&lt;code&gt;git worktree list&lt;/code&gt;结果中会标记为&lt;code&gt;missing&lt;/code&gt;状态。&lt;/p&gt;
+&lt;p&gt;此时可以使用下述命令清理：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 清理所有失效的worktree记录&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; worktree&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; prune&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 只清理超过7天未使用的失效记录&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; worktree&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; prune&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --expire&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; 7.days.ago&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 立刻全部清理&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; worktree&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; prune&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --expire&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; now&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;优缺点总结&quot; tabindex=&quot;-1&quot;&gt;优缺点总结&lt;/h2&gt;
+&lt;p&gt;优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;不用stash保存半成品代码；&lt;/li&gt;
+&lt;li&gt;多分支并行开发，不同目录独立编辑、运行；&lt;/li&gt;
+&lt;li&gt;共享git对象库，比多次clone仓库轻量（通过worktree创建的目录下不会有&lt;code&gt;.git&lt;/code&gt;，只有主工作仓库下才存在）；&lt;/li&gt;
+&lt;li&gt;降低切错分支，误提交到错误分支的概率。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;缺点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;每个worktree都会保存完整项目文件，会占用磁盘；&lt;/li&gt;
+&lt;li&gt;不能同一分支多次检出；&lt;/li&gt;
+&lt;li&gt;手动删除文件夹后，需要prune清理元数据。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;参考资料&quot; tabindex=&quot;-1&quot;&gt;参考资料&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://barrd.dev/article/parallel-development-without-the-headaches-using-git-worktree/&quot;&gt;parallel-development-without-the-headaches-using-git-worktree&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+  </entry>
   <entry>
     <title>架构决策记录ADR</title>
     <link href="/posts/架构决策记录adr/" />
@@ -2363,85 +2488,6 @@
 &lt;li&gt;&lt;a href=&quot;https://blog.openreplay.com/getting-started-javascript-iterator-helpers/&quot;&gt;Getting Started with JavaScript Iterator Helpers&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000047682096&quot;&gt;深入 JavaScript Iterator Helpers：从 API 到引擎实现&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content>
-  </entry>
-  <entry>
-    <title>yarn设置注册表源</title>
-    <link href="/posts/yarn设置注册表源/" />
-    <id>/posts/yarn设置注册表源/</id>
-    <updated>2026/4/21 15:51:06T00:00:00+08:00</updated>
-    <content type="html">&lt;h2 id=&quot;背景&quot; tabindex=&quot;-1&quot;&gt;背景&lt;/h2&gt;
-&lt;p&gt;在使用&lt;code&gt;yarn config set registry &amp;quot;http://192.168.25.57:8081/repository/npm-group/&amp;quot;&lt;/code&gt;，出现以下错误提示：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--00.png&quot; alt=&quot;注册表设置错误&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;注册表设置错误&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;h2 id=&quot;核心原因&quot; tabindex=&quot;-1&quot;&gt;核心原因&lt;/h2&gt;
-&lt;p&gt;排查后，发现是由于不同版本API变化导致的。当前使用的是 Yarn 2+（Berry，包括 v2/v3/v4），而 &lt;code&gt;registry&lt;/code&gt; 配置项和 &lt;code&gt;yarn config set registry&lt;/code&gt; 命令，是 Yarn 1.x（Classic）的用法，在新版本中已被废弃。&lt;/p&gt;
-&lt;p&gt;查看当前版本：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--01.png&quot; alt=&quot;v3.2.4&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;v3.2.4&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;h3 id=&quot;版本差异对比&quot; tabindex=&quot;-1&quot;&gt;版本差异对比&lt;/h3&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;特性&lt;/th&gt;
-&lt;th&gt;Yarn 1.x (Classic)&lt;/th&gt;
-&lt;th&gt;Yarn 2+ (Berry)&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;配置文件&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;.yarnrc&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;.yarnrc.yml&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;注册表配置项&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;registry&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;npmRegistryServer&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;设置命令&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;yarn config set registry &amp;lt;url&amp;gt;&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;不支持直接用 &lt;code&gt;registry&lt;/code&gt;，需修改配置文件或用新命令&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;div class=&quot;markdown-alert markdown-alert-note&quot;&gt;
-&lt;p class=&quot;markdown-alert-title&quot;&gt;Note&lt;/p&gt;
-&lt;p&gt;题外话，Yarn大版本更新，直接不考虑向后兼容了，不知道出于何种考虑，感觉有些粗暴。。。&lt;/p&gt;
-&lt;/div&gt;
-&lt;h2 id=&quot;解决办法&quot; tabindex=&quot;-1&quot;&gt;解决办法&lt;/h2&gt;
-&lt;h3 id=&quot;yarn-2-berry&quot; tabindex=&quot;-1&quot;&gt;Yarn@2+(Berry)&lt;/h3&gt;
-&lt;h4 id=&quot;方法一-直接修改项目配置文件&quot; tabindex=&quot;-1&quot;&gt;方法一：直接修改项目配置文件&lt;/h4&gt;
-&lt;p&gt;在项目根目录编辑或创建 &lt;code&gt;.yarnrc.yml&lt;/code&gt;文件，添加以下内容：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;npmRegistryServer&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;http://192.168.25.57:8081/repository/npm-group/&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 如需设置全局源，可编辑 ~/.yarnrc.yml&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h4 id=&quot;方法二-新版本命令&quot; tabindex=&quot;-1&quot;&gt;方法二：新版本命令&lt;/h4&gt;
-&lt;p&gt;Yarn 2+ 中，注册表配置项名称改为 &lt;code&gt;npmRegistryServer&lt;/code&gt;，可直接用 &lt;code&gt;config set&lt;/code&gt; 设置：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; config&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; set&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; npmRegistryServer&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; &quot;http://192.168.25.57:8081/repository/npm-group/&quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h4 id=&quot;yn0001错误处理&quot; tabindex=&quot;-1&quot;&gt;YN0001错误处理&lt;/h4&gt;
-&lt;p&gt;设置完源之后，执行&lt;code&gt;yarn&lt;/code&gt;安装依赖，出现以下错误信息：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&quot;./assets/yarn-config-set-registry--02.png&quot; alt=&quot;YN0001 error&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;YN0001 error&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;p&gt;这个 YN0001 错误是 Yarn 2+（Berry 系列，当前用的是 Yarn 3.2.4）的安全机制导致的：Yarn 默认会拒绝所有 HTTP（非 HTTPS）协议的请求，以防止中间人攻击。当前私有仓库地址 &lt;code&gt;http://192.168.25.57:8081/...&lt;/code&gt; 使用了 HTTP，需要手动将该地址加入白名单。&lt;/p&gt;
-&lt;h5 id=&quot;添加白名单&quot; tabindex=&quot;-1&quot;&gt;添加白名单&lt;/h5&gt;
-&lt;p&gt;修改项目根目录的 &lt;code&gt;.yarnrc.yml&lt;/code&gt; 文件，在文件中添加 &lt;code&gt;unsafeHttpWhitelist&lt;/code&gt; 配置，把私有仓库主机地址加入白名单：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 你的私有仓库地址&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;npmRegistryServer&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;http://192.168.25.57:8081/repository/npm-group/&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 允许 HTTP 请求的白名单&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_frrhl8&quot;&gt;unsafeHttpWhitelist&lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_1pf2xz&quot;&gt;- &lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;192.168.25.57&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;  # 直接写IP，也可以用通配符 &quot;*.168.25.57&quot;&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 如需允许其他 HTTP 仓库，可继续添加&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;indent&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# - &quot;registry.npmmirror.com&quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;保存后，重新执行&lt;code&gt;yarn&lt;/code&gt;即可。&lt;/p&gt;
-&lt;h3 id=&quot;yarn-1-classic&quot; tabindex=&quot;-1&quot;&gt;Yarn@1+(Classic)&lt;/h3&gt;
-&lt;p&gt;如果更习惯旧版用法，可以考虑降级：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 卸载当前 Yarn（如果是通过 npm 安装的）&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;npm&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; uninstall&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -g&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; yarn&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 安装 Yarn 1.x 最新版&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;npm&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; install&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -g&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; yarn@1&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 验证版本&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --version&lt;/span&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt; # 输出 1.x.x 即为成功&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 再执行原命令即可生效&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; config&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; set&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; registry&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; http://192.168.25.57:8081/repository/npm-group/&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 </content>
   </entry>
 </feed>
