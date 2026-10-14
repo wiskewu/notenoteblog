@@ -5,7 +5,32 @@
   <link href="/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-09-29T03:17:04.502Z</updated>
+  <updated>2026-10-14T02:48:20.485Z</updated>
+  <entry>
+    <title>yarn关闭自动更新检查</title>
+    <link href="/posts/yarn关闭自动更新检查/" />
+    <id>/posts/yarn关闭自动更新检查/</id>
+    <updated>2026/10/14 10:29:47T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;背景&quot; tabindex=&quot;-1&quot;&gt;背景&lt;/h2&gt;
+&lt;p&gt;在内网执行&lt;code&gt;yarn install&lt;/code&gt;安装项目依赖时，经常会出现明明依赖安装完毕了，但&lt;code&gt;yarn&lt;/code&gt;的输出一直未结束，卡在提示：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;info There appears to be trouble with your network connection. Retrying...&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/yarn-disable-check-update--00.png&quot; alt=&quot;问题现象&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;问题现象&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;经过排查，发现是&lt;code&gt;yarn&lt;/code&gt;在检查更新，导致连接超时。&lt;/p&gt;
+&lt;h2 id=&quot;分析&quot; tabindex=&quot;-1&quot;&gt;分析&lt;/h2&gt;
+&lt;p&gt;通过&lt;code&gt;yarn install --verbose&lt;/code&gt;查看实时日志：&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/yarn-disable-check-update--01.png&quot; alt=&quot;alt text&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;alt text&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;p&gt;得知，当前&lt;code&gt;yarn&lt;/code&gt;版本为 &lt;code&gt;V1.22.22&lt;/code&gt;，阻塞的请求为:&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_wvjl67&quot;&gt;Performing &quot;GET&quot; request to &quot;https://yarnpkg.com/latest-version&quot;.&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;即&lt;code&gt;yarn&lt;/code&gt;在后台自检更新。&lt;/p&gt;
+&lt;h2 id=&quot;关闭yarn自检更新功能&quot; tabindex=&quot;-1&quot;&gt;关闭yarn自检更新功能&lt;/h2&gt;
+&lt;p&gt;通过&lt;code&gt;yarn config set&lt;/code&gt;设置&lt;code&gt;yarn&lt;/code&gt;配置，关闭自检更新功能：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; config&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; set&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; disable-self-update-check&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; true&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;补充&quot; tabindex=&quot;-1&quot;&gt;补充&lt;/h2&gt;
+&lt;p&gt;也可考虑使用离线模式：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 强制离线模式&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;yarn&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; install&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --offline&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+</content>
+  </entry>
   <entry>
     <title>gitlab配置PAT避免每次https鉴权</title>
     <link href="/posts/gitlab配置pat避免每次https鉴权/" />
@@ -816,47 +841,6 @@
 &lt;li&gt;白名单设置详细说明页面：&lt;a href=&quot;https://chromeenterprise.google/policies/?policy=ExtensionInstallAllowlist&quot;&gt;ExtensionInstallAllowlist&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;设置Chrome应用和扩展程序政策（适用于Windows）&lt;a href=&quot;https://support.google.com/chrome/a/answer/7532015?hl=zh-Hans&quot;&gt;扩展程序政策&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Git分支回退到上一个提交</title>
-    <link href="/posts/git分支回退到上一个提交/" />
-    <id>/posts/git分支回退到上一个提交/</id>
-    <updated>2026/6/16 13:18:14T00:00:00+08:00</updated>
-    <content type="html">&lt;h2 id=&quot;背景&quot; tabindex=&quot;-1&quot;&gt;背景&lt;/h2&gt;
-&lt;p&gt;在提交代码时，偶尔会发现自己在错误的分支（如受保护的&lt;code&gt;dev&lt;/code&gt;分支）上进行了commit操作。此时需要对此提交进行回退。根据不同的场景可以使用不同的回退操作：&lt;/p&gt;
-&lt;h2 id=&quot;场景一-代码仅在本地提交-未推送到远端&quot; tabindex=&quot;-1&quot;&gt;场景一：代码仅在本地提交，未推送到远端&lt;/h2&gt;
-&lt;p&gt;这种场景下，通常可以采用软回退方式，保留变更的代码：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; reset&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --soft&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; HEAD^&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;表示将分支的commit回退到上一个commit，代码保留在工作区，此时可以切换到自己的开发分支进行重新提交：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 查看撤回的commit变更的文件&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; status&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 切换分支&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; checkout&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -b&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; bug_fix_xxx&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 提交代码&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; add&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; .&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 提交信息示例&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; commit&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -m&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; &quot;fix: 修复了xxxbug&quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&quot;markdown-alert markdown-alert-note&quot;&gt;
-&lt;p class=&quot;markdown-alert-title&quot;&gt;Note&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;--soft&lt;/code&gt;: 仅撤销提交的记录，修改的文件还在，可以重新commit&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;HEAD~1&lt;/code&gt;等价于&lt;code&gt;HEAD^&lt;/code&gt;，若需回退多个，则使用&lt;code&gt;HEAD~n&lt;/code&gt;，例如&lt;code&gt;HEAD~2&lt;/code&gt;表示回退两个版本&lt;/p&gt;
-&lt;/div&gt;
-&lt;h3 id=&quot;硬重置&quot; tabindex=&quot;-1&quot;&gt;硬重置&lt;/h3&gt;
-&lt;p&gt;如果要彻底丢弃本地修改，commit和变更都撤销，则可以使用:&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; reset&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --hard&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; HEAD^&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;场景二-代码已经推送到远端-需要回退远端分支&quot; tabindex=&quot;-1&quot;&gt;场景二：代码已经推送到远端，需要回退远端分支&lt;/h2&gt;
-&lt;p&gt;注意，若远端分支是受保护的，能推送到远端说明具备此分支的修改权限。&lt;/p&gt;
-&lt;h3 id=&quot;方式a&quot; tabindex=&quot;-1&quot;&gt;方式A&lt;/h3&gt;
-&lt;p&gt;reset后强制推送（多人协作慎用，会覆盖远端提交）：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; reset&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --hard&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; HEAD^&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; push&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -f&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; origin&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; 当前分支名&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;这里的&lt;code&gt;origin&lt;/code&gt;以远端仓库源为准，可使用&lt;code&gt;git remote -v&lt;/code&gt;查看。&lt;/p&gt;
-&lt;h3 id=&quot;方式b&quot; tabindex=&quot;-1&quot;&gt;方式B&lt;/h3&gt;
-&lt;p&gt;使用revert生成新提交，生产环境首选，不删除历史提交：&lt;/p&gt;
-&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_25oonp&quot;&gt;# 自动生成一条新的commit，commit信息是撤销上一次提交的改动，历史保留&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; revert&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; HEAD&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; push&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; -f&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; origin&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt; 当前分支名&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 </content>
   </entry>
 </feed>
