@@ -5,7 +5,17 @@
   <link href="til/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-10-14T02:48:20.487Z</updated>
+  <updated>2026-10-16T07:01:12.514Z</updated>
+  <entry>
+    <title>TIL 2026/10/16 14:49:41</title>
+    <link href="/til/快速预览base64形式的svg图片内容/" />
+    <id>/til/快速预览base64形式的svg图片内容/</id>
+    <updated>2026/10/16 14:49:41T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;快速预览base64形式的svg图片内容&quot; tabindex=&quot;-1&quot;&gt;快速预览base64形式的SVG图片内容&lt;/h2&gt;
+&lt;p&gt;对于形如&lt;code&gt;data:image/svg+xml;charset=utf-8,...&lt;/code&gt;base64编码格式的 SVG 图片，可以直接在浏览器地址栏中粘贴该字符串，回车即可预览图片内容。&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/svg-base64-preview--00.png&quot; alt=&quot;预览效果&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;预览效果&lt;/figcaption&gt;&lt;/figure&gt;
+</content>
+  </entry>
   <entry>
     <title>TIL 2026/7/28 11:10:46</title>
     <link href="/til/终端中常用的快捷键/" />
@@ -135,15 +145,6 @@
     <updated>2026/4/11 00:01:26T00:00:00+08:00</updated>
     <content type="html">&lt;h2 id=&quot;build-your-own-react&quot; tabindex=&quot;-1&quot;&gt;Build your own React&lt;/h2&gt;
 &lt;p&gt;从零开始，逐步构建实现一个简易版的React，从代码中一步步了解React核心原理：&lt;a href=&quot;https://pomb.us/build-your-own-react/&quot;&gt;Build your own React&lt;/a&gt;&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>TIL 2026/4/10 23:20:13</title>
-    <link href="/til/a-complete-guide-to-useeffect/" />
-    <id>/til/a-complete-guide-to-useeffect/</id>
-    <updated>2026/4/10 23:20:13T00:00:00+08:00</updated>
-    <content type="html">&lt;h2 id=&quot;a-complete-guide-to-useeffect&quot; tabindex=&quot;-1&quot;&gt;A Complete Guide to useEffect&lt;/h2&gt;
-&lt;p&gt;一份关于React &lt;code&gt;useEffect&lt;/code&gt; 的深入指南。&lt;a href=&quot;https://overreacted.io/a-complete-guide-to-useeffect/&quot;&gt;A Complete Guide to useEffect&lt;/a&gt;&lt;/p&gt;
 </content>
   </entry>
 </feed>
