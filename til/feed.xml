@@ -5,7 +5,20 @@
   <link href="til/feed.xml" rel="self" />
   <link href="/" />
   <id>/</id>
-  <updated>2026-10-16T08:15:30.886Z</updated>
+  <updated>2026-11-02T02:05:24.644Z</updated>
+  <entry>
+    <title>TIL 2026/11/2 09:59:24</title>
+    <link href="/til/打开一个无地址栏的浏览器页面/" />
+    <id>/til/打开一个无地址栏的浏览器页面/</id>
+    <updated>2026/11/2 09:59:24T00:00:00+08:00</updated>
+    <content type="html">&lt;h2 id=&quot;打开一个无地址栏的浏览器页面&quot; tabindex=&quot;-1&quot;&gt;打开一个无地址栏的浏览器页面&lt;/h2&gt;
+&lt;p&gt;使用 &lt;code&gt;--app&lt;/code&gt; 参数，可以打开一个无地址栏的浏览器页面。
+例如：&lt;/p&gt;
+&lt;pre class=&quot;shiki shiki-themes github-light-default github-dark-default __shiki_c16w35&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;__shiki_1g8orr&quot;&gt;./chrome.exe&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --app=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;https://example.com&quot;&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --incognito&lt;/span&gt;&lt;span class=&quot;__shiki_1r536h&quot;&gt; --user-data-dir=&lt;/span&gt;&lt;span class=&quot;__shiki_50d5g0&quot;&gt;&quot;D:\tmp\chrome-temp-01&quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;以新用户身份在新的隐私窗口中打开指定地址：&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&quot;./assets/open-url-without-address-bar--00.png&quot; alt=&quot;示例&quot; tabindex=&quot;0&quot; data-content-img=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;figcaption&gt;示例&lt;/figcaption&gt;&lt;/figure&gt;
+</content>
+  </entry>
   <entry>
     <title>TIL 2026/10/16 14:49:41</title>
     <link href="/til/快速预览base64形式的svg图片内容/" />
@@ -136,15 +149,6 @@
     <updated>2026/4/11 11:34:03T00:00:00+08:00</updated>
     <content type="html">&lt;h2 id=&quot;编程语言的流行程度&quot; tabindex=&quot;-1&quot;&gt;编程语言的流行程度&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&quot;https://www.tiobe.com/tiobe-index/&quot;&gt;Tiobe-Index&lt;/a&gt;: 查看当下流行的语言，关注语言流行趋势。&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>TIL 2026/4/11 00:01:26</title>
-    <link href="/til/build-your-own-react/" />
-    <id>/til/build-your-own-react/</id>
-    <updated>2026/4/11 00:01:26T00:00:00+08:00</updated>
-    <content type="html">&lt;h2 id=&quot;build-your-own-react&quot; tabindex=&quot;-1&quot;&gt;Build your own React&lt;/h2&gt;
-&lt;p&gt;从零开始，逐步构建实现一个简易版的React，从代码中一步步了解React核心原理：&lt;a href=&quot;https://pomb.us/build-your-own-react/&quot;&gt;Build your own React&lt;/a&gt;&lt;/p&gt;
 </content>
   </entry>
 </feed>
